@@ -1,9 +1,11 @@
-import { getWorkflowsForUser } from "@/components/actions/workflows/getWorkflowsForUser";
+import { getWorkflowsForUser } from "@/actions/workflows/getWorkflowsForUser";
 import { Skeleton } from "@/components/ui/skeleton";
 import { waitFor } from "@/lib/helper/waitFor";
 import React, { Suspense } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, InboxIcon } from "lucide-react";
+import CreateWorkflowDialog from "./_components/CreateWorkflowDialog";
+import WorkflowCard from "./_components/WorkflowCard";
 
 export default function page() {
   return (
@@ -15,6 +17,7 @@ export default function page() {
             Create, edit, and manage your workflows
           </p>
         </div>
+        <CreateWorkflowDialog triggerText="Create workflow" />
       </div>
 
       <div className="h-full py-6">
@@ -66,9 +69,16 @@ async function UserWorkflows() {
             Create your first workflow by clicking the button below.
           </p>
         </div>
+        <CreateWorkflowDialog triggerText="Create your first workflow" />
       </div>
     );
   }
 
-  return <div>All good</div>;
+  return (
+    <div className="grid grid-cols-1 gap-4">
+      {workflows.map((workflow) => (
+        <WorkflowCard key={workflow.id} workflow={workflow} />
+      ))}
+    </div>
+  );
 }
