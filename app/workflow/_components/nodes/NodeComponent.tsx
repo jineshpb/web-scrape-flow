@@ -5,6 +5,8 @@ import NodeHeader from "./NodeHeader";
 import { AppNodeData } from "@/types/appNode";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { NodeInput, NodeInputs } from "./NodeInputs";
+import { NodeOutputs } from "./NodeOutputs";
+import { NodeOutput } from "./NodeOutputs";
 
 //we established the node in the FlowEditor.tsx file. Now we are just rendering it here. Styling is done in the NodeCard.tsx file
 
@@ -21,6 +23,11 @@ const nodeComponent = memo((props: NodeProps) => {
           <NodeInput key={input.name} input={input} nodeId={props.id} />
         ))}
       </NodeInputs>
+      <NodeOutputs>
+        {task.outputs.map((output) => (
+          <NodeOutput key={output.name} output={output} />
+        ))}
+      </NodeOutputs>
     </NodeCard>
   );
 });
