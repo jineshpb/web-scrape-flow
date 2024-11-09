@@ -7,16 +7,20 @@ import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { NodeInput, NodeInputs } from "./NodeInputs";
 import { NodeOutputs } from "./NodeOutputs";
 import { NodeOutput } from "./NodeOutputs";
+import { Badge } from "@/components/ui/badge";
 
 //we established the node in the FlowEditor.tsx file. Now we are just rendering it here. Styling is done in the NodeCard.tsx file
 
 //the double bang is used to convert the value to a boolean
+
+const isDevMode = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
 const nodeComponent = memo((props: NodeProps) => {
   const nodeData = props.data as AppNodeData;
   const task = TaskRegistry[nodeData.type];
   return (
     <NodeCard nodeId={props.id} isSelected={!!props.selected}>
+      {isDevMode && <Badge>DEV:{props.id}</Badge>}
       <NodeHeader taskType={nodeData.type} nodeId={props.id} />
       <NodeInputs>
         {task.inputs.map((input) => (
