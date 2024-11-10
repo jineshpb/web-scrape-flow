@@ -1,5 +1,5 @@
 import { TaskType } from "@/types/task";
-import { ExtractTextFromElementsTask } from "./ExtractTextFromElemtns";
+import { ExtractTextFromElementsTask } from "./ExtractTextFromElements";
 import { LaunchBrowserTask } from "./LaunchBrowser";
 import { PageToHtmlTask } from "./PageToHtml";
 import { WorkflowTask } from "@/types/workflow";
