@@ -1,9 +1,25 @@
+"use client";
+
 import Logo from "@/components/Logo";
 import { ModeToggle } from "@/components/ThemeModeToggle";
 import { Separator } from "@/components/ui/separator";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-function layout({ children }: { children: React.ReactNode }) {
+export default function WorkflowLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null; // or a loading skeleton
+  }
+
   return (
     <div className="flex flex-col w-full h-screen">
       {children}
@@ -15,5 +31,3 @@ function layout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
-export default layout;
