@@ -5,6 +5,7 @@ import FlowEditor from "./FlowEditor";
 import TopBar from "./topbar/TopBar";
 import TaskMenu from "./TaskMenu";
 import { FlowValidationContextProvider } from "@/components/context/FlowValidationContext";
+import { WorkflowStatus } from "@/types/workflow";
 //this is the main editor component . this have the UI around the flow editor. FLowEDitor is the actual editor
 
 function Editor({ workflow }: { workflow: workflow }) {
@@ -16,6 +17,7 @@ function Editor({ workflow }: { workflow: workflow }) {
             title="Workflow Editor"
             subTitle={workflow.name}
             workflowId={workflow.id}
+            isPublished={workflow.status === WorkflowStatus.PUBLISHED}
           />
           <section className="flex h-full overflow-auto">
             <TaskMenu />
