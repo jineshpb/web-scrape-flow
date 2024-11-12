@@ -10,6 +10,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//TODO: change to sentence case
+
 model workflow {
   id        String @id @default(cuid())
   userId    String

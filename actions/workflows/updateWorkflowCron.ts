@@ -18,7 +18,7 @@ export async function updateWorkflowCron({
   }
 
   try {
-    const interval = parser.parseExpression(cron, { utc: true });
+    const interval = parser.parseExpression(cron, { tz: "Asia/Kolkata" });
     await prisma.workflow.update({
       where: { id, userId },
       data: { cron, nextRunAt: interval.next().toDate() },

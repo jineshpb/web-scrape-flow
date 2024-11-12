@@ -4,6 +4,9 @@ import { PageToHtmlExecutor } from "./PageToHtmlExecutor";
 import { ExecutionEnvironment } from "@/types/executor";
 import { WorkflowTask } from "@/types/workflow";
 import { ExtractTextFromElementExecutor } from "./ExtractTextFromElementExecutor";
+import { FillInputExecutor } from "./FillInputExecutor";
+import { ClickElementExecutor } from "./ClickElementExecutor";
+import { WaitForElementExecutor } from "./WaitForElementExecutor";
 
 //this is the most fucked up type ever so far
 //explanation: at 1:07:07 of the video,
@@ -20,4 +23,7 @@ export const ExecutorRegistry: RegistryType = {
   LAUNCH_BROWSER: LaunchBrowserExecutor,
   PAGE_TO_HTML: PageToHtmlExecutor,
   EXTRACT_TEXT_FROM_ELEMENT: ExtractTextFromElementExecutor,
+  FILL_INPUT: FillInputExecutor,
+  CLICK_ELEMENT: ClickElementExecutor,
+  WAIT_FOR_ELEMENT: WaitForElementExecutor,
 };

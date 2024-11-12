@@ -20,7 +20,7 @@ import { error } from "console";
 
 //one of the most important function
 
-export async function ExecuteWorkflow(executionId: string) {
+export async function ExecuteWorkflow(executionId: string, nextRunAt?: Date) {
   const execution = await prisma.workflowExecution.findUnique({
     where: {
       id: executionId,
@@ -42,7 +42,11 @@ export async function ExecuteWorkflow(executionId: string) {
   const environment: Environment = { phases: {} };
 
   // initialize workflow execution
-  await initializeWorkflowExecution(executionId, execution.workflowId);
+  await initializeWorkflowExecution(
+    executionId,
+    execution.workflowId,
+    nextRunAt
+  );
 
   // initialize phase status
   await initializePhaseStatus(execution);
@@ -85,7 +89,8 @@ export async function ExecuteWorkflow(executionId: string) {
 
 async function initializeWorkflowExecution(
   executionId: string,
-  workflowId: string
+  workflowId: string,
+  nextRunAt?: Date
 ) {
   await prisma.workflowExecution.update({
     where: {
@@ -105,6 +110,7 @@ async function initializeWorkflowExecution(
       lastRunAt: new Date(),
       lastRunStatus: WorkflowExecutionStatus.RUNNING,
       lastRunId: executionId,
+      ...(nextRunAt && { nextRunAt }),
     },
   });
 }
@@ -248,10 +254,11 @@ async function executePhase(
   environment: Environment,
   logCollector: LogCollector
 ): Promise<boolean> {
-  // await waitFor(3000);
+  await waitFor(1500);
   const runFn = ExecutorRegistry[node.data.type];
 
   if (!runFn) {
+    logCollector.error(`Executor not found for, ${node.data.type}`);
     return false;
   }
 

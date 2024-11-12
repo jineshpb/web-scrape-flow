@@ -96,7 +96,7 @@ function SchedulerDialog(props: { workflowId: string; cron: string | null }) {
         <div className="space-y-4 p-6">
           <p className="text-sm text-muted-foreground">
             Specify a cron expression to schedule a periodic workflow execution.
-            All times are in UTC
+            All times are in IST (UTC+5:30)
           </p>
           <Input
             placeholder="E.g. 0 0 * * *"
