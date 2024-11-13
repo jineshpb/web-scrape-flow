@@ -7,6 +7,7 @@ import { ExtractTextFromElementExecutor } from "./ExtractTextFromElementExecutor
 import { FillInputExecutor } from "./FillInputExecutor";
 import { ClickElementExecutor } from "./ClickElementExecutor";
 import { WaitForElementExecutor } from "./WaitForElementExecutor";
+import { DeliverViaWebhookExecutor } from "./DeliverViaWebhookExecutor";
 
 //this is the most fucked up type ever so far
 //explanation: at 1:07:07 of the video,
@@ -26,4 +27,5 @@ export const ExecutorRegistry: RegistryType = {
   FILL_INPUT: FillInputExecutor,
   CLICK_ELEMENT: ClickElementExecutor,
   WAIT_FOR_ELEMENT: WaitForElementExecutor,
+  DELIVER_VIA_WEBHOOK: DeliverViaWebhookExecutor,
 };
