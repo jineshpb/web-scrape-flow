@@ -1,4 +1,11 @@
-import { formatDistanceToNow, intervalToDuration } from "date-fns";
+import { Period } from "@/types/analytic";
+import {
+  endOfMonth,
+  formatDistanceToNow,
+  intervalToDuration,
+  startOfMonth,
+} from "date-fns";
+import { DateRange } from "react-day-picker";
 
 export function DateToDurationString(
   end: Date | null | undefined,
@@ -19,4 +26,10 @@ export function DateToDurationString(
   });
 
   return `${duration.minutes || 0}m ${duration.seconds || 0}s`;
+}
+
+export function PeriodToDateRange(period: Period) {
+  const startDate = startOfMonth(new Date(period.year, period.month));
+  const endDate = endOfMonth(new Date(period.year, period.month));
+  return { startDate, endDate };
 }
