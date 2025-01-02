@@ -18,17 +18,20 @@ export async function DeliverViaWebhookExecutor(
       return false;
     }
 
+    const bodyData = typeof body === "string" ? JSON.parse(body) : body;
+
     const response = await fetch(targetUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(bodyData),
     });
 
     const statusCode = response.status;
     if (statusCode !== 200) {
-      environment.log.error(`status code: ${statusCode}`);
+      const errorText = await response.text();
+      environment.log.error(`HTTP Error ${statusCode}: ${errorText}`);
       return false;
     }
 

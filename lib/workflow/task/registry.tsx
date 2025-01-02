@@ -12,6 +12,7 @@ import { ReadPropertyFromJsonTask } from "./ReadPropertyFromJson";
 import { AddPropertyToJsonTask } from "./AddProprtyToJson";
 import { NavigateUrlTask } from "./NavigateUrlTask";
 import { ScrollToElementTask } from "./ScrollToElement";
+import { ExtractHtmlFromElementsTask } from "./ExtractHtmlFromElements";
 
 type Registry = {
   [K in TaskType]: WorkflowTask & {
@@ -32,4 +33,5 @@ export const TaskRegistry: Registry = {
   ADD_PROPERTY_TO_JSON: AddPropertyToJsonTask,
   NAVIGATE_URL: NavigateUrlTask,
   SCROLL_TO_ELEMENT: ScrollToElementTask,
+  EXTRACT_HTML_FROM_ELEMENT: ExtractHtmlFromElementsTask,
 };

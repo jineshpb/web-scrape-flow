@@ -26,6 +26,16 @@ export const AddPropertyToJsonTask = {
       type: TaskParamType.STRING,
       required: true,
     },
+    {
+      name: "Add to parent",
+      type: TaskParamType.SELECT,
+      required: false,
+      options: [
+        { label: "Parent", value: "parent" },
+        { label: "Children", value: "children" },
+      ],
+      defaultValue: "parent",
+    },
   ] as const,
   outputs: [
     {

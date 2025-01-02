@@ -13,6 +13,7 @@ import { ReadPropertyFromJsonExecutor } from "./ReadPropertyFromJsonExecutor";
 import { AddPropertyToJsonExecutor } from "./AddPropertyToJsonExecutor";
 import { NavigateUrlExecutor } from "./NavigateUrlExecutor";
 import { ScrollToElementExecutor } from "./ScrollToElementExecutor";
+import { ExtractHtmlFromElementExecutor } from "./ExtractHtmlFromElementExecutor";
 
 //this is the most fucked up type ever so far
 //explanation: at 1:07:07 of the video,
@@ -38,4 +39,5 @@ export const ExecutorRegistry: RegistryType = {
   ADD_PROPERTY_TO_JSON: AddPropertyToJsonExecutor,
   NAVIGATE_URL: NavigateUrlExecutor,
   SCROLL_TO_ELEMENT: ScrollToElementExecutor,
+  [TaskType.EXTRACT_HTML_FROM_ELEMENT]: ExtractHtmlFromElementExecutor,
 };
