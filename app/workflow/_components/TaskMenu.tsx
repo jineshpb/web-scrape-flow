@@ -46,6 +46,7 @@ function TaskMenu() {
             <TaskMenuBtn taskType={TaskType.PAGE_TO_HTML} />
             <TaskMenuBtn taskType={TaskType.EXTRACT_TEXT_FROM_ELEMENT} />
             <TaskMenuBtn taskType={TaskType.EXTRACT_DATA_WITH_AI} />
+            <TaskMenuBtn taskType={TaskType.EXTRACT_HTML_FROM_ELEMENT} />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="storage">
