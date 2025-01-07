@@ -9,6 +9,8 @@ import { AppNode } from "@/types/appNode";
 import BrowserInstanceParam from "./param/BrowserInstanceParam";
 import SelectParam from "./param/SelectParam";
 import CredentialsParam from "./param/Credentialsparam";
+import TextAreaParam from "./param/TextAreaParam";
+import { Switch } from "@/components/ui/switch";
 
 function NodeparamField({
   param,
@@ -37,7 +39,14 @@ function NodeparamField({
 
   switch (param.type) {
     case TaskParamType.STRING:
-      return (
+      return param.variant === "textarea" ? (
+        <TextAreaParam
+          param={param}
+          value={value}
+          updateNodeParamValue={updatedParamValue}
+          disabled={disabled}
+        />
+      ) : (
         <StringParam
           param={param}
           value={value}
@@ -70,6 +79,30 @@ function NodeparamField({
           updateNodeParamValue={updatedParamValue}
           disabled={disabled}
         />
+      );
+    case TaskParamType.NUMBER:
+      return (
+        <div className="w-full">
+          <p className="text-xs text-muted-foreground">{param.name}</p>
+          <Input
+            type="number"
+            value={value}
+            onChange={(e) => updatedParamValue(e.target.value)}
+            disabled={disabled}
+            placeholder={param.placeholder}
+          />
+        </div>
+      );
+    case TaskParamType.BOOLEAN:
+      return (
+        <div className="w-full flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">{param.name}</p>
+          <Switch
+            checked={value === "true"}
+            onCheckedChange={(checked) => updatedParamValue(checked.toString())}
+            disabled={disabled}
+          />
+        </div>
       );
     default:
       return (

@@ -15,6 +15,7 @@ export const AddPropertyToJsonTask = {
       name: "JSON",
       type: TaskParamType.STRING,
       required: true,
+      variant: "textarea",
     },
     {
       name: "Property name",

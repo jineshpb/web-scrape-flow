@@ -26,6 +26,8 @@ export const ClickElementTask = {
       name: "Selector",
       type: TaskParamType.STRING,
       required: true,
+      variant: "textarea",
+      helperText: "CSS selector to find the element to click",
     },
   ] as const,
   outputs: [
