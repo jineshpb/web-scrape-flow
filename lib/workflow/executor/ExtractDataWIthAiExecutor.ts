@@ -26,6 +26,8 @@ export async function ExtractDataWithAiExecutor(
       return false;
     }
 
+    const outputFormat = environment.getInput("Output Format") || "json";
+
     //Get credentials from database
     const credential = await prisma.credential.findUnique({
       where: {
@@ -48,13 +50,17 @@ export async function ExtractDataWithAiExecutor(
       apiKey: plainCredentialValue,
     });
 
+    const systemPrompt =
+      outputFormat === "json"
+        ? "You are a webscraper helper that extracts data from HTML or text. You will be given a piece of text or HTML content as input and also the prompt with the data you have to extract. The response should always be only the extracted data as a JSON array or object, without any additional words or explanation. Analyze the input carefully and extract data precisely based on the prompt. If no data is found, return an empty JSON array. Work only with the provided content and ensure the output is always a valid JSON array without any surrounding text"
+        : "You are a text summarization assistant. You will be given a piece of text and a prompt describing what to focus on. Provide a clear, concise summary in plain text format. Focus on the key points mentioned in the prompt. Keep the summary direct and informative, without any JSON formatting.";
+
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
-          content:
-            "You are a webscraper helper that extracts data from HTML or text. you will be given a piece of text or HTML content as input and also the prompt with the data you have to extract. The response should always be only teh extracted data as a JSON array or object, without any additional words or explanation. Analyze the input carefully and extract data percisely based on the prompt. if no data is found , return an empty JSOn array. Wokr only witht the provided content and ensure the output is always a valid JSON array wihtout any surrounding text",
+          content: systemPrompt,
         },
         {
           role: "user",
@@ -65,7 +71,7 @@ export async function ExtractDataWithAiExecutor(
           content: prompt,
         },
       ],
-      temperature: 1,
+      temperature: outputFormat === "json" ? 0 : 0.7, // Lower temperature for JSON, higher for text
     });
 
     environment.log.info("Prompt tokens: " + response.usage?.prompt_tokens);

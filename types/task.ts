@@ -12,6 +12,8 @@ export enum TaskType {
   NAVIGATE_URL = "NAVIGATE_URL",
   SCROLL_TO_ELEMENT = "SCROLL_TO_ELEMENT",
   EXTRACT_HTML_FROM_ELEMENT = "EXTRACT_HTML_FROM_ELEMENT",
+  TEXT_INPUT = "TEXT_INPUT",
+  ELEMENT_ITERATOR = "ELEMENT_ITERATOR",
 }
 
 export enum TaskParamType {
@@ -19,6 +21,10 @@ export enum TaskParamType {
   BROWSER_INSTANCE = "BROWSER_INSTANCE",
   SELECT = "SELECT",
   CREDENTIAL = "CREDENTIAL",
+  TEXT_INPUT = "TEXT_INPUT",
+  ELEMENT_ITERATOR = "ELEMENT_ITERATOR",
+  NUMBER = "NUMBER",
+  BOOLEAN = "BOOLEAN",
 }
 
 export interface TaskParam {
@@ -27,5 +33,6 @@ export interface TaskParam {
   helperText?: string;
   required?: boolean;
   hideHandle?: boolean;
+  useTextarea?: boolean;
   [key: string]: any;
 }

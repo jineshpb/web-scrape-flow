@@ -15,7 +15,7 @@ export type Environment = {
   };
 };
 
-export type ExecutionEnvironment<T extends WorkflowTask> = {
+export interface ExecutionEnvironment<T extends WorkflowTask> {
   getInput: (name: T["inputs"][number]["name"]) => string;
   setOutput: (name: T["outputs"][number]["name"], value: string) => void;
 
@@ -26,4 +26,5 @@ export type ExecutionEnvironment<T extends WorkflowTask> = {
   setPage(page: Page): void;
 
   log: LogCollector;
-};
+  next: () => Promise<void>;
+}

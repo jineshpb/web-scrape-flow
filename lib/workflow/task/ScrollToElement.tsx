@@ -20,6 +20,8 @@ export const ScrollToElementTask = {
       name: "Selector",
       type: TaskParamType.STRING,
       required: true,
+      variant: "textarea",
+      helperText: "CSS selector for the element to scroll to",
     },
   ] as const,
   outputs: [

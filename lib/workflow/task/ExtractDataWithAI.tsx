@@ -1,6 +1,6 @@
 import { TaskParamType, TaskType } from "@/types/task";
 import { WorkflowTask } from "@/types/workflow";
-import { BrainIcon, SparkleIcon, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export const ExtractDataWithAITask = {
   type: TaskType.EXTRACT_DATA_WITH_AI,
@@ -13,6 +13,8 @@ export const ExtractDataWithAITask = {
       name: "Content",
       type: TaskParamType.STRING,
       required: true,
+      variant: "textarea",
+      helperText: "Content to extract data from",
     },
     {
       name: "Credentials",
@@ -24,6 +26,17 @@ export const ExtractDataWithAITask = {
       type: TaskParamType.STRING,
       required: true,
       variant: "textarea",
+    },
+    {
+      name: "Output Format",
+      type: TaskParamType.SELECT,
+      required: true,
+      options: [
+        { label: "JSON Data", value: "json" },
+        { label: "Plain Text Summary", value: "text" },
+      ],
+      defaultValue: "json",
+      helperText: "Choose between structured JSON data or plain text summary",
     },
   ] as const,
   outputs: [

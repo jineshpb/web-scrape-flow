@@ -21,6 +21,8 @@ export const ExtractHtmlFromElementsTask = {
       name: "Selector",
       type: TaskParamType.STRING,
       required: true,
+      variant: "textarea",
+      helperText: "Selector from which html extracted",
     },
   ] as const,
   outputs: [

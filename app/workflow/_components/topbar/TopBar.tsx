@@ -35,7 +35,7 @@ function TopBar({
             variant={"ghost"}
             size={"icon"}
             onClick={() => {
-              router.back();
+              router.push("/workflows");
             }}
           >
             <ArrowLeftIcon size={20} />
