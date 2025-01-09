@@ -8,11 +8,8 @@ export async function ElementIteratorExecutor(
   try {
     const selector = environment.getInput("Selector");
     const waitForSelector = environment.getInput("WaitForSelector");
-<<<<<<< HEAD
     const shouldContinue = environment.getInput("Continue") === "true";
     const currentIndex = parseInt(environment.getInput("CurrentIndex") || "0");
-=======
->>>>>>> 87ef017b4991c6448f5ea436abde663b69b51adb
 
     if (!selector) {
       environment.log.error("Selector is required");
@@ -20,7 +17,6 @@ export async function ElementIteratorExecutor(
     }
 
     const page = environment.getPage()!;
-<<<<<<< HEAD
     const elements = await page.$$(selector);
 
     // End iteration if we've processed all elements
@@ -32,27 +28,10 @@ export async function ElementIteratorExecutor(
     // On first element OR when continue signal received
     if (currentIndex === 0 || shouldContinue) {
       const element = elements[currentIndex];
-=======
-
-    // Wait for elements if specified
-    if (waitForSelector) {
-      await page.waitForSelector(selector);
-    }
-
-    // Get all matching elements
-    const elements = await page.$$(selector);
-
-    // Iterate through each element
-    for (let i = 0; i < elements.length; i++) {
-      const element = elements[i];
-
-      // Create a unique selector for this specific element
->>>>>>> 87ef017b4991c6448f5ea436abde663b69b51adb
       const uniqueSelector = await createUniqueSelector(
         page,
         element,
         selector,
-<<<<<<< HEAD
         currentIndex
       );
 
@@ -63,21 +42,6 @@ export async function ElementIteratorExecutor(
     }
 
     // Wait for continue signal
-=======
-        i
-      );
-
-      // Set outputs for this iteration
-      environment.setOutput("CurrentElement", uniqueSelector);
-      environment.setOutput("Index", i.toString());
-
-      // Signal that we have more iterations
-      if (i < elements.length - 1) {
-        await environment.next();
-      }
-    }
-
->>>>>>> 87ef017b4991c6448f5ea436abde663b69b51adb
     return true;
   } catch (error: any) {
     environment.log.error(error.message);

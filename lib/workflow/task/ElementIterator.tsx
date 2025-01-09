@@ -11,15 +11,12 @@ export const ElementIteratorTask = {
   credits: 1,
   inputs: [
     {
-<<<<<<< HEAD
       name: "HTML",
       type: TaskParamType.STRING,
       required: true,
       description: "HTML content to search within",
     },
     {
-=======
->>>>>>> 87ef017b4991c6448f5ea436abde663b69b51adb
       name: "Selector",
       type: TaskParamType.STRING,
       required: true,
@@ -33,7 +30,6 @@ export const ElementIteratorTask = {
       default: true,
       description: "Wait for elements to be present before iterating",
     },
-<<<<<<< HEAD
     {
       name: "Continue",
       type: TaskParamType.STRING,
@@ -48,8 +44,6 @@ export const ElementIteratorTask = {
       default: "0",
       description: "Current iteration index",
     },
-=======
->>>>>>> 87ef017b4991c6448f5ea436abde663b69b51adb
   ] as const,
   outputs: [
     {
@@ -62,13 +56,10 @@ export const ElementIteratorTask = {
       type: TaskParamType.NUMBER,
       description: "Current iteration index",
     },
-<<<<<<< HEAD
     {
       name: "CurrentIndex",
       type: TaskParamType.STRING,
       description: "Next iteration index",
     },
-=======
->>>>>>> 87ef017b4991c6448f5ea436abde663b69b51adb
   ] as const,
 } satisfies WorkflowTask;
