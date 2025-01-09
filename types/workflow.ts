@@ -1,6 +1,7 @@
 import { LucideProps } from "lucide-react";
 import { TaskParam, TaskType } from "./task";
 import { AppNode } from "./appNode";
+import { Page } from "puppeteer";
 
 export enum WorkflowStatus {
   DRAFT = "DRAFT",
@@ -42,4 +43,8 @@ export enum ExecutionPhaseStatus {
   RUNNING = "RUNNING",
   COMPLETED = "COMPLETED",
   FAILED = "FAILED",
+}
+
+export interface ExecuteProps {
+  page: Page;
 }

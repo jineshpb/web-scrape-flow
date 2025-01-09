@@ -20,5 +20,11 @@ export const DeliverViaWebhookTask = {
       required: true,
     },
   ] as const,
-  outputs: [] as const,
+  outputs: [
+    {
+      name: "Completed",
+      type: TaskParamType.BOOLEAN,
+      description: "Whether the webhook delivery was successful",
+    },
+  ] as const,
 } satisfies WorkflowTask;

@@ -36,6 +36,7 @@ function TaskMenu() {
             <TaskMenuBtn taskType={TaskType.CLICK_ELEMENT} />
             <TaskMenuBtn taskType={TaskType.NAVIGATE_URL} />
             <TaskMenuBtn taskType={TaskType.SCROLL_TO_ELEMENT} />
+            <TaskMenuBtn taskType={TaskType.GO_BACK} />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="data-extraction">

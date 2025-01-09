@@ -25,6 +25,8 @@ export interface ExecutionEnvironment<T extends WorkflowTask> {
   getPage: () => Page | undefined;
   setPage(page: Page): void;
 
+  page: Page;
+
   log: LogCollector;
   next: () => Promise<void>;
 }

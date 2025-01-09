@@ -14,6 +14,7 @@ export enum TaskType {
   EXTRACT_HTML_FROM_ELEMENT = "EXTRACT_HTML_FROM_ELEMENT",
   TEXT_INPUT = "TEXT_INPUT",
   ELEMENT_ITERATOR = "ELEMENT_ITERATOR",
+  GO_BACK = "GO_BACK",
 }
 
 export enum TaskParamType {

@@ -38,9 +38,11 @@ export async function DeliverViaWebhookExecutor(
     const responseBody = await response.json();
     environment.log.info(JSON.stringify(responseBody, null, 4));
 
+    environment.setOutput("Completed", "true");
     return true;
   } catch (error: any) {
     environment.log.error(error.message);
+    environment.setOutput("Completed", "false");
     return false;
   }
 }

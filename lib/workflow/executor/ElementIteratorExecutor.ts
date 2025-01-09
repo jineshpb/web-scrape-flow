@@ -8,6 +8,8 @@ export async function ElementIteratorExecutor(
   try {
     const selector = environment.getInput("Selector");
     const waitForSelector = environment.getInput("WaitForSelector");
+    const shouldContinue = environment.getInput("Continue") === "true";
+    const currentIndex = parseInt(environment.getInput("CurrentIndex") || "0");
 
     if (!selector) {
       environment.log.error("Selector is required");
@@ -15,37 +17,31 @@ export async function ElementIteratorExecutor(
     }
 
     const page = environment.getPage()!;
-
-    // Wait for elements if specified
-    if (waitForSelector) {
-      await page.waitForSelector(selector);
-    }
-
-    // Get all matching elements
     const elements = await page.$$(selector);
 
-    // Iterate through each element
-    for (let i = 0; i < elements.length; i++) {
-      const element = elements[i];
+    // End iteration if we've processed all elements
+    if (currentIndex >= elements.length) {
+      environment.log.info("Iteration completed");
+      return false;
+    }
 
-      // Create a unique selector for this specific element
+    // On first element OR when continue signal received
+    if (currentIndex === 0 || shouldContinue) {
+      const element = elements[currentIndex];
       const uniqueSelector = await createUniqueSelector(
         page,
         element,
         selector,
-        i
+        currentIndex
       );
 
-      // Set outputs for this iteration
       environment.setOutput("CurrentElement", uniqueSelector);
-      environment.setOutput("Index", i.toString());
-
-      // Signal that we have more iterations
-      if (i < elements.length - 1) {
-        await environment.next();
-      }
+      environment.setOutput("Index", currentIndex.toString());
+      environment.setOutput("CurrentIndex", (currentIndex + 1).toString());
+      return true;
     }
 
+    // Wait for continue signal
     return true;
   } catch (error: any) {
     environment.log.error(error.message);
