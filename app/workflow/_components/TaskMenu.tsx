@@ -50,6 +50,7 @@ function TaskMenu() {
             <TaskMenuBtn taskType={TaskType.EXTRACT_HTML_FROM_ELEMENT} />
             <TaskMenuBtn taskType={TaskType.TEXT_INPUT} />
             <TaskMenuBtn taskType={TaskType.ELEMENT_ITERATOR} />
+            <TaskMenuBtn taskType={TaskType.BATCH_PROCESS_LINKS} />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="storage">

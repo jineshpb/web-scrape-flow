@@ -16,6 +16,7 @@ import { ExtractHtmlFromElementsTask } from "./ExtractHtmlFromElements";
 import { TextInputTask } from "./TextInputTask";
 import { ElementIteratorTask } from "./ElementIterator";
 import { GoBackTask } from "./GoBack";
+import { BatchProcessLinksTask } from "./BatchProcessLinks";
 
 type Registry = {
   [K in TaskType]: WorkflowTask & {
@@ -40,4 +41,5 @@ export const TaskRegistry: Registry = {
   TEXT_INPUT: TextInputTask,
   ELEMENT_ITERATOR: ElementIteratorTask,
   GO_BACK: GoBackTask,
+  BATCH_PROCESS_LINKS: BatchProcessLinksTask,
 };

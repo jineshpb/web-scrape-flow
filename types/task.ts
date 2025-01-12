@@ -15,6 +15,7 @@ export enum TaskType {
   TEXT_INPUT = "TEXT_INPUT",
   ELEMENT_ITERATOR = "ELEMENT_ITERATOR",
   GO_BACK = "GO_BACK",
+  BATCH_PROCESS_LINKS = "BATCH_PROCESS_LINKS",
 }
 
 export enum TaskParamType {
@@ -26,6 +27,7 @@ export enum TaskParamType {
   ELEMENT_ITERATOR = "ELEMENT_ITERATOR",
   NUMBER = "NUMBER",
   BOOLEAN = "BOOLEAN",
+  STRING_ARRAY = "STRING_ARRAY",
 }
 
 export interface TaskParam {
