@@ -10,29 +10,18 @@ export async function ExtractDataWithAiExecutor(
 ): Promise<boolean> {
   try {
     const credentials = environment.getInput("Credentials");
-    if (!credentials) {
-      environment.log.error("Input -> Credentials is not defined");
-      return false;
-    }
+    const aiProvider = environment.getInput("AI Provider") || "openai";
     const prompt = environment.getInput("Prompt");
-    if (!prompt) {
-      environment.log.error("Input -> Prompt is not defined");
-      return false;
-    }
-
     const content = environment.getInput("Content");
-    if (!content) {
-      environment.log.error("Input -> Content is not defined");
-      return false;
-    }
-
     const outputFormat = environment.getInput("Output Format") || "json";
 
-    //Get credentials from database
+    if (!credentials || !prompt || !content) {
+      environment.log.error("Required inputs are missing");
+      return false;
+    }
+
     const credential = await prisma.credential.findUnique({
-      where: {
-        id: credentials,
-      },
+      where: { id: credentials },
     });
 
     if (!credential) {
@@ -45,10 +34,6 @@ export async function ExtractDataWithAiExecutor(
       environment.log.error("Failed to decrypt credential value");
       return false;
     }
-
-    const openai = new OpenAI({
-      apiKey: plainCredentialValue,
-    });
 
     const systemPrompt =
       outputFormat === "json"
@@ -65,34 +50,48 @@ export async function ExtractDataWithAiExecutor(
     }
 
     try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt,
-          },
-          {
-            role: "user",
-            content: content,
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        temperature: outputFormat === "json" ? 0 : 0.7,
-        max_tokens: 4000,
-      });
+      let result: string;
 
-      environment.log.info("Prompt tokens: " + response.usage?.prompt_tokens);
-      environment.log.info(
-        "Completion tokens: " + response.usage?.completion_tokens
-      );
+      if (aiProvider === "openai") {
+        const openai = new OpenAI({ apiKey: plainCredentialValue });
+        const response = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: content },
+            { role: "user", content: prompt },
+          ],
+          temperature: outputFormat === "json" ? 0 : 0.7,
+          max_tokens: 16000,
+        });
+        result = response.choices[0].message?.content || "";
+        environment.log.info("Prompt tokens: " + response.usage?.prompt_tokens);
+        environment.log.info(
+          "Completion tokens: " + response.usage?.completion_tokens
+        );
+      } else if (aiProvider === "deepseek") {
+        const deepseek = new OpenAI({
+          apiKey: plainCredentialValue,
+          baseURL: "https://api.deepseek.com",
+        });
+        const response = await deepseek.chat.completions.create({
+          model: "deepseek-chat",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: content },
+            { role: "user", content: prompt },
+          ],
+          temperature: outputFormat === "json" ? 0 : 0.7,
+          max_tokens: 4000,
+        });
+        result = response.choices[0].message?.content || "";
+      } else {
+        environment.log.error("Unsupported AI provider");
+        return false;
+      }
 
-      const result = response.choices[0].message?.content;
       if (!result) {
-        environment.log.error("No result from OpenAI");
+        environment.log.error("No result from AI provider");
         return false;
       }
 

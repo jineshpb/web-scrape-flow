@@ -5,6 +5,7 @@ import { NetworkIcon } from "lucide-react";
 export const BatchProcessLinksTask = {
   type: TaskType.BATCH_PROCESS_LINKS,
   label: "Batch Process Links",
+  isEntryPoint: false,
   icon: (props) => (
     <NetworkIcon className="stroke-purple-400 w-4 h-4" {...props} />
   ),

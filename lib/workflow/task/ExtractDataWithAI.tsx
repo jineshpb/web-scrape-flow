@@ -5,7 +5,7 @@ import { Sparkles } from "lucide-react";
 export const ExtractDataWithAITask = {
   type: TaskType.EXTRACT_DATA_WITH_AI,
   label: "Extract data with AI",
-  icon: (props) => <Sparkles className=" stroke-rose-400 w-4 h-4" {...props} />,
+  icon: (props) => <Sparkles className="stroke-rose-400 w-4 h-4" {...props} />,
   isEntryPoint: false,
   credits: 4,
   inputs: [
@@ -17,9 +17,22 @@ export const ExtractDataWithAITask = {
       helperText: "Content to extract data from",
     },
     {
+      name: "AI Provider",
+      type: TaskParamType.SELECT,
+      required: true,
+      options: [
+        { label: "OpenAI", value: "openai" },
+        { label: "DeepSeek", value: "deepseek" },
+      ],
+      defaultValue: "openai",
+      helperText: "Select the AI provider to use",
+    },
+    {
       name: "Credentials",
       type: TaskParamType.CREDENTIAL,
       required: true,
+      credentialType: "ai",
+      helperText: "Select the API credentials for the chosen provider",
     },
     {
       name: "Prompt",

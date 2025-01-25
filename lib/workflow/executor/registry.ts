@@ -18,6 +18,7 @@ import { TextInputExecutor } from "./TextInputExecutor";
 import { ElementIteratorExecutor } from "./ElementIteratorExecutor";
 import { executeGoBack } from "./goBack";
 import { BatchProcessLinksExecutor } from "./BatchProcessLinksExecutor";
+import { GetCurrentUrlExecutor } from "./GetCurrentUrlExecutor";
 
 //this is the most fucked up type ever so far
 //explanation: at 1:07:07 of the video,
@@ -46,4 +47,5 @@ export const ExecutorRegistry: {
   ELEMENT_ITERATOR: ElementIteratorExecutor,
   GO_BACK: executeGoBack,
   BATCH_PROCESS_LINKS: BatchProcessLinksExecutor,
+  GET_CURRENT_URL: GetCurrentUrlExecutor,
 };

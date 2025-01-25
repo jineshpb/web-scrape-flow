@@ -8,15 +8,16 @@ export enum WorkflowStatus {
   PUBLISHED = "PUBLISHED",
 }
 
-export type WorkflowTask = {
-  label: string;
-  icon: React.FC<LucideProps>;
+export interface WorkflowTask {
   type: TaskType;
-  isEntryPoint?: boolean;
-  inputs: TaskParam[];
-  outputs: TaskParam[];
+  label: string;
+  description?: string;
+  icon: (props: LucideProps) => JSX.Element;
+  isEntryPoint: boolean;
   credits: number;
-};
+  inputs: readonly TaskParam[];
+  outputs: readonly TaskParam[];
+}
 
 export type WorkflowExecutionPlanPhase = {
   phase: number;

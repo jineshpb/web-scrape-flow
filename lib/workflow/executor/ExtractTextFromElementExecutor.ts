@@ -20,20 +20,32 @@ export async function ExtractTextFromElementExecutor(
     }
 
     const $ = cheerio.load(html);
-    const element = $(selector);
+    // Split selectors by comma and trim whitespace
+    const selectors = selector.split(',').map(s => s.trim());
+    const extractedTexts: string[] = [];
 
-    if (!element) {
-      environment.log.error(`Element not found: ${selector}`);
+    for (const singleSelector of selectors) {
+      const element = $(singleSelector);
+      
+      if (element.length === 0) {
+        environment.log.error(`Element not found: ${singleSelector}`);
+        continue;
+      }
+
+      const text = element.text().trim();
+      if (!text) {
+        environment.log.error(`Element has no text: ${singleSelector}`);
+        continue;
+      }
+      extractedTexts.push(text);
+    }
+
+    if (extractedTexts.length === 0) {
+      environment.log.error("No text could be extracted from any selector");
       return false;
     }
 
-    const extractedText = $.text(element);
-    if (!extractedText) {
-      environment.log.error(`Element has no text: ${selector}`);
-      return false;
-    }
-    environment.setOutput("Extracted text", extractedText);
-
+    environment.setOutput("Extracted text", extractedTexts.join('\n'));
     return true;
   } catch (error: any) {
     environment.log.error(error.message);

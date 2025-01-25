@@ -16,6 +16,7 @@ export enum TaskType {
   ELEMENT_ITERATOR = "ELEMENT_ITERATOR",
   GO_BACK = "GO_BACK",
   BATCH_PROCESS_LINKS = "BATCH_PROCESS_LINKS",
+  GET_CURRENT_URL = "GET_CURRENT_URL",
 }
 
 export enum TaskParamType {

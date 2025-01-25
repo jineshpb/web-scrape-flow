@@ -5,6 +5,7 @@ import { ListIcon } from "lucide-react";
 export const ElementIteratorTask = {
   type: TaskType.ELEMENT_ITERATOR,
   label: "Collect Links",
+  isEntryPoint: false,
   icon: (props) => <ListIcon className="stroke-blue-400 w-4 h-4" {...props} />,
   credits: 1,
   inputs: [

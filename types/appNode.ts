@@ -4,6 +4,8 @@ import { TaskParam, TaskType } from "./task";
 export interface AppNodeData {
   type: TaskType;
   inputs: Record<string, string>;
+  description?: string;
+  notes?: string;
   [key: string]: any;
 }
 

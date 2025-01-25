@@ -51,6 +51,7 @@ function TaskMenu() {
             <TaskMenuBtn taskType={TaskType.TEXT_INPUT} />
             <TaskMenuBtn taskType={TaskType.ELEMENT_ITERATOR} />
             <TaskMenuBtn taskType={TaskType.BATCH_PROCESS_LINKS} />
+            <TaskMenuBtn taskType={TaskType.GET_CURRENT_URL} />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="storage">

@@ -5,6 +5,7 @@ import { ArrowLeftIcon } from "lucide-react";
 export const GoBackTask = {
   type: TaskType.GO_BACK,
   label: "Go Back",
+  isEntryPoint: false,
   icon: (props) => (
     <ArrowLeftIcon className="stroke-blue-400 w-4 h-4" {...props} />
   ),
