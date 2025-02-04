@@ -6,6 +6,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/auth/callback",
   "/api/workflows/(.*)*",
   "/api/webhooks/stripe",
+  "/api/workflows/nodes/generate-caption",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {

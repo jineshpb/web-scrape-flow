@@ -12,6 +12,7 @@ import {
   useEdgesState,
   useNodesState,
   useReactFlow,
+  NodeProps,
 } from "@xyflow/react";
 import React, { useCallback, useEffect } from "react";
 import "@xyflow/react/dist/style.css";
@@ -21,6 +22,7 @@ import nodeComponent from "./nodes/NodeComponent";
 import { AppNode } from "@/types/appNode";
 import DeletableEdge from "./edges/DeletableEdge";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
+import NodeComponent, { WorkflowContext } from "./nodes/NodeComponent";
 
 //this is the actual editor component. It is the main component that renders the flow editor.
 //this is the actual editor component. It is the main component that renders the flow editor.
@@ -34,10 +36,6 @@ import { TaskRegistry } from "@/lib/workflow/task/registry";
 //    inputs: {},
 //  },
 //}
-
-const nodeTypes = {
-  FlowScraperNode: nodeComponent,
-};
 
 const edgeTypes = {
   default: DeletableEdge,
@@ -60,13 +58,24 @@ function FlowEditor({ workflow }: { workflow: workflow }) {
     try {
       const flow = JSON.parse(workflow.definition);
       if (!flow) return;
-      setNodes(flow.nodes || []);
+
+      // Ensure nodes have the correct type
+      const nodesWithType = flow.nodes.map((node: AppNode) => ({
+        ...node,
+        type: "app-node", // Explicitly set node type
+      }));
+
+      setNodes(nodesWithType || []);
       setEdges(flow.edges || []);
-      if (!flow.viewport) return;
-      const { x = 0, y = 0, zoom = 1 } = flow.viewport;
-      setViewport({ x, y, zoom });
-    } catch (error) {}
-  }, [workflow.definition, setEdges, setNodes, setViewport]);
+
+      if (flow.viewport) {
+        const { x = 0, y = 0, zoom = 1 } = flow.viewport;
+        setViewport({ x, y, zoom });
+      }
+    } catch (error) {
+      console.error("Error loading workflow:", error);
+    }
+  }, [workflow.definition, setNodes, setEdges, setViewport]);
 
   //Below is the drag and drop functionality
 
@@ -159,27 +168,33 @@ function FlowEditor({ workflow }: { workflow: workflow }) {
     [nodes, edges]
   );
 
+  const nodeTypes = {
+    "app-node": NodeComponent,
+  };
+
   return (
-    <main className="h-full w-full">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        snapToGrid
-        snapGrid={snapGrid}
-        fitViewOptions={fitViewOptions}
-        onDragOver={onDragOver}
-        onDrop={onDrop}
-        onConnect={onConnect}
-        isValidConnection={isValidConnection}
-      >
-        <Controls position="top-left" fitViewOptions={fitViewOptions} />
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-      </ReactFlow>
-    </main>
+    <WorkflowContext.Provider value={workflow.id}>
+      <main className="h-full w-full">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          snapToGrid
+          snapGrid={snapGrid}
+          fitViewOptions={fitViewOptions}
+          onDragOver={onDragOver}
+          onDrop={onDrop}
+          onConnect={onConnect}
+          isValidConnection={isValidConnection}
+        >
+          <Controls position="top-left" fitViewOptions={fitViewOptions} />
+          <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+        </ReactFlow>
+      </main>
+    </WorkflowContext.Provider>
   );
 }
 
