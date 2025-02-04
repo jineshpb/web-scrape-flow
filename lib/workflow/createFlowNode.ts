@@ -9,12 +9,13 @@ export function createFlowNode(
 ): AppNode {
   return {
     id: crypto.randomUUID(),
-    type: "FlowScraperNode",
+    type: "app-node",
     dragHandle: ".drag-handle",
 
     data: {
       type: nodeType,
       inputs: {},
+      notes: "",
     },
     position: position ?? { x: 0, y: 0 },
   };

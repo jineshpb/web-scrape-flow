@@ -19,7 +19,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // Run cleanup on app startup
-  await cleanupOldWorkflowRuns();
+  // await cleanupOldWorkflowRuns();
+  //moved this to a cron job
 
   return (
     <ClerkProvider

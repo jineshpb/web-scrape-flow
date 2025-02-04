@@ -9,6 +9,7 @@ import { CalculateWorkflowCost } from "@/lib/workflow/helpers";
 import { WorkflowStatus } from "@/types/workflow";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { AppNode } from "@/types/appNode";
 
 export async function PublishWorkflow({
   id,
@@ -38,8 +39,16 @@ export async function PublishWorkflow({
   }
 
   const flow = JSON.parse(flowDefinition);
+  // Preserve node data including notes when publishing
+  const nodesWithData = flow.nodes.map((node: AppNode) => ({
+    ...node,
+    data: {
+      ...node.data,
+      notes: node.data.notes || "",
+    },
+  }));
 
-  const result = FlowToExecutionPlan(flow.nodes, flow.edges);
+  const result = FlowToExecutionPlan(nodesWithData, flow.edges);
 
   if (result.error) {
     throw new Error("Flow definition not valid");
