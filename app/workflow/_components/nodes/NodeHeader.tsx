@@ -44,40 +44,45 @@ function NodeHeader({
   // console.log("@@Node ID", nodeId);
 
   const handleNotesChange = async (newNotes: string) => {
-    setNodes((nodes) =>
-      nodes.map((node) => {
-        if (node.id === nodeId) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              notes: newNotes,
-            },
-          };
-        }
-        return node;
-      })
-    );
-
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    const flowDefinition = JSON.stringify({
-      nodes: getNodes(),
-      edges: getEdges(),
-    });
-
     try {
+      // Update local state first
+      setNodes((nodes) =>
+        nodes.map((node) => {
+          if (node.id === nodeId) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                notes: newNotes,
+              },
+            };
+          }
+          return node;
+        })
+      );
+
+      // Ensure state is updated before getting flow definition
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const flowDefinition = JSON.stringify({
+        nodes: getNodes(),
+        edges: getEdges(),
+      });
+
+      // Save to database
       await updateWorkflow({
         id: workflowId,
         definition: flowDefinition,
       });
     } catch (error) {
+      console.error("Failed to update notes:", error);
       toast.error("Failed to save note");
-      console.error("Failed to update workflow:", error);
     }
   };
 
   const generateCaption = async () => {
+    if (isGenerating) return;
+
     try {
       setIsGenerating(true);
 
@@ -92,8 +97,8 @@ function NodeHeader({
       const { caption } = await response.json();
       console.log("Generated caption:", caption);
 
+      // Wait for generation to complete before updating
       await handleNotesChange(caption);
-
       toast.success("Generated caption for node");
     } catch (error) {
       console.error("Generation error:", error);

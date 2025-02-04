@@ -335,6 +335,7 @@ function createExecutionEnvironment(
     },
     log: logCollector,
     next: async () => {},
+    page: environment.page as Page,
   };
 }
 

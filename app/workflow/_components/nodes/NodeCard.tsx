@@ -34,7 +34,7 @@ function NodeCard({
         });
       }}
       className={cn(
-        "rounded-md cursor-pointer bg-background border-2 border-separate w-[420px] text-xs gap-1 flex flex-col",
+        "rounded-xl cursor-pointer bg-background border-2 gap-1 border-separate w-[420px] text-xs  pb-2 flex flex-col",
         isSelected && "border-primary",
         hasInvalidInputs && "border-destructive border-2"
       )}

@@ -5,13 +5,16 @@ import {
   BaseEdge,
   EdgeLabelRenderer,
   EdgeProps,
-  getSmoothStepPath,
+  getBezierPath,
   useReactFlow,
 } from "@xyflow/react";
 import { X } from "lucide-react";
 
 export default function DeletableEdge(props: EdgeProps) {
-  const [edgePath, labelX, labelY] = getSmoothStepPath(props);
+  const [edgePath, labelX, labelY] = getBezierPath({
+    ...props,
+    curvature: 0.5, // Adjust this value to control the curve (0.1 to 1.0)
+  });
   const { setEdges } = useReactFlow();
 
   return (
@@ -19,7 +22,12 @@ export default function DeletableEdge(props: EdgeProps) {
       <BaseEdge
         path={edgePath}
         markerEnd={props.markerEnd}
-        style={props.style}
+        style={{
+          ...props.style,
+          strokeWidth: 2,
+          strokeDasharray: "5,5",
+          animation: "dashdraw 0.5s linear infinite",
+        }}
       />
 
       <EdgeLabelRenderer>

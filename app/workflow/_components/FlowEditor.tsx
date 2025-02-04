@@ -182,7 +182,6 @@ function FlowEditor({ workflow }: { workflow: workflow }) {
           onEdgesChange={onEdgesChange}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
-          snapToGrid
           snapGrid={snapGrid}
           fitViewOptions={fitViewOptions}
           onDragOver={onDragOver}
