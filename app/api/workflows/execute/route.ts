@@ -81,15 +81,15 @@ export async function GET(request: Request) {
         trigger: WorkflowExecutionTrigger.CRON,
         phases: {
           create: executionPlan.flatMap((phase) => {
-            return phase.nodes.flatMap((node) => {
-              return {
-                userId: workflow.userId,
-                status: ExecutionPhaseStatus.CREATED,
-                number: phase.phase,
-                node: JSON.stringify(node),
-                name: TaskRegistry[node.data.type].label,
-              };
-            });
+            return phase.nodes.map((node) => ({
+              userId: workflow.userId,
+              status: ExecutionPhaseStatus.CREATED,
+              number: phase.phase,
+              node: JSON.stringify(node),
+              name: TaskRegistry[node.data.type].label,
+              inputs: "{}",
+              outputs: "{}",
+            }));
           }),
         },
       },
