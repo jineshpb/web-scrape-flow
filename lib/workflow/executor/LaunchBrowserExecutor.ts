@@ -44,7 +44,6 @@ export async function LaunchBrowserExecutor(
           "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
         ),
         headless: true,
-        ignoreHTTPSErrors: true,
         defaultViewport: {
           width: 1920,
           height: 1080,
