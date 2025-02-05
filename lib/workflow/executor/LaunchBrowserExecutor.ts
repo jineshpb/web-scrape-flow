@@ -39,12 +39,16 @@ export async function LaunchBrowserExecutor(
     let browser: CoreBrowser;
     if (process.env.VERCEL_ENV === "production") {
       browser = await puppeteerCore.launch({
+        args: [...chromium.args, "--no-sandbox"],
         executablePath: await chromium.executablePath(
           "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
         ),
-        args: chromium.args,
         headless: true,
-        defaultViewport: chromium.defaultViewport,
+        ignoreHTTPSErrors: true,
+        defaultViewport: {
+          width: 1920,
+          height: 1080,
+        },
       });
     } else {
       browser = (await puppeteer.launch({
