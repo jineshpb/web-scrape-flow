@@ -1,6 +1,8 @@
 import { waitFor } from "@/lib/helper/waitFor";
 import { Environment, ExecutionEnvironment } from "@/types/executor";
 import puppeteer from "puppeteer";
+import puppeteerCore, { Browser as CoreBrowser } from "puppeteer-core";
+import chromium from "@sparticuz/chromium-min";
 import { LaunchBrowserTask } from "../task/LaunchBrowser";
 import { exec } from "child_process";
 //this is bright data proxy
@@ -33,19 +35,25 @@ export async function LaunchBrowserExecutor(
 ): Promise<boolean> {
   try {
     const websiteUrl = environment.getInput("website Url");
-    const browser = await puppeteer.launch({
-      headless: false, //for testing
-      //this is bright data proxy
-      // args: ["--proxy-server=brd.superproxy.io:22225"],
-    });
 
-    //enable above and disable below to use own browser
-    // const browser = await puppeteer.connect({
-    //   browserWSEndpoint: BROWSER_WS,
-    // });
+    let browser: CoreBrowser;
+    if (process.env.VERCEL_ENV === "production") {
+      browser = await puppeteerCore.launch({
+        executablePath: await chromium.executablePath(
+          "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+        ),
+        args: chromium.args,
+        headless: true,
+        defaultViewport: chromium.defaultViewport,
+      });
+    } else {
+      browser = (await puppeteer.launch({
+        headless: false,
+      })) as unknown as CoreBrowser;
+    }
 
     environment.log.info("Browser launched successfully");
-    environment.setBrowser(browser);
+    environment.setBrowser(browser as unknown as import("puppeteer").Browser);
     const page = await browser.newPage();
     // page.setViewport({ width: 2560, height: 1440 });
 
@@ -60,7 +68,7 @@ export async function LaunchBrowserExecutor(
     // });
 
     await page.goto(websiteUrl);
-    environment.setPage(page);
+    environment.setPage(page as unknown as import("puppeteer").Page);
     environment.log.info(`Opened page at ${websiteUrl}`);
     return true;
   } catch (error: any) {
