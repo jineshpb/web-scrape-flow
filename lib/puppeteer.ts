@@ -1,22 +1,25 @@
-import puppeteer from "puppeteer-core";
-import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer";
+import puppeteerCore from "puppeteer-core";
+import chromium from "@sparticuz/chromium-min";
 
 export async function getBrowser() {
-  // These are the recommended args from Sparticuz/chromium
-  const options = {
-    args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath(
-      "https://github.com/Sparticuz/chromium/releases/download/v119.0.0/chromium-v119.0.0-pack.tar"
-    ),
-    headless: true,
-  };
-
-  try {
-    const browser = await puppeteer.launch(options);
-    return browser;
-  } catch (error) {
-    console.error("Failed to launch browser:", error);
-    throw error;
+  if (
+    process.env.NODE_ENV === "production" ||
+    process.env.VERCEL_ENV === "production"
+  ) {
+    const executablePath = await chromium.executablePath(
+      "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+    );
+    return puppeteerCore.launch({
+      executablePath,
+      args: chromium.args,
+      headless: true,
+      defaultViewport: chromium.defaultViewport,
+    });
+  } else {
+    return puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
   }
 }
