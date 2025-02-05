@@ -39,7 +39,17 @@ export async function LaunchBrowserExecutor(
     let browser: CoreBrowser;
     if (process.env.VERCEL_ENV === "production") {
       browser = await puppeteerCore.launch({
-        args: [...chromium.args, "--no-sandbox"],
+        args: [
+          ...chromium.args,
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+          "--disable-accelerated-2d-canvas",
+          "--no-first-run",
+          "--no-zygote",
+          "--disable-gpu",
+          "--single-process",
+        ],
         executablePath: await chromium.executablePath(
           "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
         ),
@@ -58,19 +68,28 @@ export async function LaunchBrowserExecutor(
     environment.log.info("Browser launched successfully");
     environment.setBrowser(browser as unknown as import("puppeteer").Browser);
     const page = await browser.newPage();
-    // page.setViewport({ width: 2560, height: 1440 });
 
-    //this is to view bright data browser not required
-    // const client = await page.createCDPSession();
-    // await openDevtools(page, client);
+    // Add performance optimizations
+    await page.setRequestInterception(true);
+    page.on("request", (request) => {
+      const resourceType = request.resourceType();
+      if (
+        resourceType === "image" ||
+        resourceType === "stylesheet" ||
+        resourceType === "font"
+      ) {
+        request.abort();
+      } else {
+        request.continue();
+      }
+    });
 
-    //this is bright data proxy
-    // await page.authenticate({
-    //   username: "brd-customer-hl_c5716a01-zone-scrape_flow",
-    //   password: "q24tfbl7dr6q",
-    // });
+    // Add timeout and better error handling
+    await page.goto(websiteUrl, {
+      waitUntil: "networkidle0",
+      timeout: 30000,
+    });
 
-    await page.goto(websiteUrl);
     environment.setPage(page as unknown as import("puppeteer").Page);
     environment.log.info(`Opened page at ${websiteUrl}`);
     return true;
