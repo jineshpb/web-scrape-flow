@@ -35,31 +35,43 @@ export async function LaunchBrowserExecutor(
 ): Promise<boolean> {
   try {
     const websiteUrl = environment.getInput("website Url");
+    environment.log.info("Starting browser launch...");
 
     let browser: CoreBrowser;
     if (process.env.VERCEL_ENV === "production") {
-      browser = await puppeteerCore.launch({
-        args: [
-          ...chromium.args,
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage",
-          "--disable-accelerated-2d-canvas",
-          "--no-first-run",
-          "--no-zygote",
-          "--disable-gpu",
-          "--single-process",
-        ],
-        executablePath: await chromium.executablePath(
+      environment.log.info("Running in Vercel production environment");
+      try {
+        const execPath = await chromium.executablePath(
           "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
-        ),
-        headless: true,
-        defaultViewport: {
-          width: 1920,
-          height: 1080,
-        },
-      });
+        );
+        environment.log.info(`Chrome executable path: ${execPath}`);
+
+        browser = await puppeteerCore.launch({
+          args: [
+            ...chromium.args,
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-accelerated-2d-canvas",
+            "--no-first-run",
+            "--no-zygote",
+            "--disable-gpu",
+            "--single-process",
+          ],
+          executablePath: execPath,
+          headless: true,
+          defaultViewport: {
+            width: 1920,
+            height: 1080,
+          },
+        });
+      } catch (browserError: any) {
+        environment.log.error(`Browser launch error: ${browserError.message}`);
+        environment.log.error(`Stack trace: ${browserError.stack}`);
+        throw browserError;
+      }
     } else {
+      environment.log.info("Running in development environment");
       browser = (await puppeteer.launch({
         headless: false,
       })) as unknown as CoreBrowser;
@@ -67,34 +79,43 @@ export async function LaunchBrowserExecutor(
 
     environment.log.info("Browser launched successfully");
     environment.setBrowser(browser as unknown as import("puppeteer").Browser);
-    const page = await browser.newPage();
 
-    // Add performance optimizations
-    await page.setRequestInterception(true);
-    page.on("request", (request) => {
-      const resourceType = request.resourceType();
-      if (
-        resourceType === "image" ||
-        resourceType === "stylesheet" ||
-        resourceType === "font"
-      ) {
-        request.abort();
-      } else {
-        request.continue();
-      }
-    });
+    try {
+      environment.log.info("Creating new page...");
+      const page = await browser.newPage();
 
-    // Add timeout and better error handling
-    await page.goto(websiteUrl, {
-      waitUntil: "networkidle0",
-      timeout: 30000,
-    });
+      environment.log.info("Setting up request interception...");
+      await page.setRequestInterception(true);
+      page.on("request", (request) => {
+        const resourceType = request.resourceType();
+        if (
+          resourceType === "image" ||
+          resourceType === "stylesheet" ||
+          resourceType === "font"
+        ) {
+          request.abort();
+        } else {
+          request.continue();
+        }
+      });
 
-    environment.setPage(page as unknown as import("puppeteer").Page);
-    environment.log.info(`Opened page at ${websiteUrl}`);
-    return true;
+      environment.log.info(`Navigating to ${websiteUrl}...`);
+      await page.goto(websiteUrl, {
+        waitUntil: "networkidle0",
+        timeout: 30000,
+      });
+
+      environment.setPage(page as unknown as import("puppeteer").Page);
+      environment.log.info(`Successfully opened page at ${websiteUrl}`);
+      return true;
+    } catch (pageError: any) {
+      environment.log.error(`Page operation error: ${pageError.message}`);
+      environment.log.error(`Stack trace: ${pageError.stack}`);
+      throw pageError;
+    }
   } catch (error: any) {
-    environment.log.error(error.message);
+    environment.log.error(`Final error catch: ${error.message}`);
+    environment.log.error(`Stack trace: ${error.stack}`);
     return false;
   }
 }
