@@ -6,9 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
-  relationMode = "prisma"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 //TODO: change to sentence case
@@ -24,7 +23,7 @@ model workflow {
   creditsCost Int? @default(0)
 
   cron String?
-  status      String // DARFT | PUBLISHED
+  status      String // DRAFT | PUBLISHED
 
   lastRunAt DateTime?
   lastRunId String?
