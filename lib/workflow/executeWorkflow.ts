@@ -41,50 +41,62 @@ export async function ExecuteWorkflow(executionId: string, nextRunAt?: Date) {
 
   const environment: Environment = { phases: {} };
 
-  // initialize workflow execution
-  await initializeWorkflowExecution(
-    executionId,
-    execution.workflowId,
-    nextRunAt
-  );
-
-  // initialize phase status
-  await initializePhaseStatus(execution);
-
-  let creditsConsumed = 0;
-  let executionFailed = false;
-  for (const phase of execution.phases) {
-    // consume credits
-
-    // execute phase
-
-    const phaseExecution = await executeWorkflowPhase(
-      phase,
-      environment,
-      edges,
-      execution.userId
+  try {
+    // initialize workflow execution
+    await initializeWorkflowExecution(
+      executionId,
+      execution.workflowId,
+      nextRunAt
     );
-    //adding up the credits consumed from all phases
-    creditsConsumed += phaseExecution.creditsConsumed;
-    if (!phaseExecution.success) {
-      executionFailed = true;
-      break;
+    await initializePhaseStatus(execution);
+
+    let creditsConsumed = 0;
+    let executionFailed = false;
+
+    // Add timeout check
+    const startTime = Date.now();
+    const TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+    for (const phase of execution.phases) {
+      // Check for timeout
+      if (Date.now() - startTime > TIMEOUT) {
+        throw new Error("Workflow execution timeout");
+      }
+
+      const phaseExecution = await executeWorkflowPhase(
+        phase,
+        environment,
+        edges,
+        execution.userId
+      );
+
+      creditsConsumed += phaseExecution.creditsConsumed;
+      if (!phaseExecution.success) {
+        executionFailed = true;
+        break;
+      }
     }
+
+    await finalizeWorkflowExecution(
+      executionId,
+      execution.workflowId,
+      executionFailed,
+      creditsConsumed
+    );
+  } catch (error) {
+    console.error("Workflow execution error:", error);
+    // Cleanup on error
+    await finalizeWorkflowExecution(
+      executionId,
+      execution.workflowId,
+      true, // mark as failed
+      0
+    );
+  } finally {
+    // Always cleanup the environment
+    await cleanupEnvironment(environment);
+    revalidatePath(`/workflow/runs`);
   }
-
-  //finalize the execution
-
-  await finalizeWorkflowExecution(
-    executionId,
-    execution.workflowId,
-    executionFailed,
-    creditsConsumed
-  );
-
-  // cleanup the environment
-  await cleanupEnvironment(environment);
-
-  revalidatePath(`/workflow/runs`);
 }
 
 async function initializeWorkflowExecution(
@@ -361,6 +373,48 @@ async function decrementCredits(
   } catch (error) {
     console.error(error);
     logCollector.error("insufficient balance");
+    return false;
+  }
+}
+
+// Add function to stop a running workflow
+export async function StopWorkflow(executionId: string) {
+  try {
+    const execution = await prisma.workflowExecution.findUnique({
+      where: { id: executionId },
+      include: { phases: true },
+    });
+
+    if (!execution || execution.status !== "RUNNING") {
+      return false;
+    }
+
+    // Mark execution as failed
+    await prisma.workflowExecution.update({
+      where: { id: executionId },
+      data: {
+        status: WorkflowExecutionStatus.FAILED,
+        completedAt: new Date(),
+      },
+    });
+
+    // Mark running phases as failed
+    await prisma.executionPhase.updateMany({
+      where: {
+        execution: {
+          id: executionId,
+        },
+        status: ExecutionPhaseStatus.RUNNING,
+      },
+      data: {
+        status: ExecutionPhaseStatus.FAILED,
+        completedAt: new Date(),
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Failed to stop workflow:", error);
     return false;
   }
 }
