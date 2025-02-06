@@ -38,32 +38,22 @@ export async function LaunchBrowserExecutor(
     environment.log.info("Starting browser launch...");
 
     let browser: CoreBrowser;
-    if (process.env.VERCEL_ENV === "production") {
-      environment.log.info("Running in Vercel production environment");
+    if (process.env.RAILWAY_ENVIRONMENT_NAME === "production") {
+      environment.log.info("Running in Railway production environment");
       try {
-        const execPath = await chromium.executablePath(
-          "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
-        );
-        environment.log.info(`Chrome executable path: ${execPath}`);
-
         browser = await puppeteerCore.launch({
           args: [
             ...chromium.args,
             "--no-sandbox",
             "--disable-setuid-sandbox",
             "--disable-dev-shm-usage",
-            "--disable-accelerated-2d-canvas",
-            "--no-first-run",
-            "--no-zygote",
-            "--disable-gpu",
             "--single-process",
           ],
-          executablePath: execPath,
+          executablePath: await chromium.executablePath(
+            "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+          ),
           headless: true,
-          defaultViewport: {
-            width: 1920,
-            height: 1080,
-          },
+          defaultViewport: chromium.defaultViewport,
         });
       } catch (browserError: any) {
         environment.log.error(`Browser launch error: ${browserError.message}`);
