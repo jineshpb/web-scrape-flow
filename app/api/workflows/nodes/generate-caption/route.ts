@@ -6,6 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  organization: process.env.OPENAI_ORGANIZATION_ID,
 });
 
 export async function POST(request: Request) {
