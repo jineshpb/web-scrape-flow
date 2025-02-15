@@ -1,6 +1,7 @@
 import { ExecutionEnvironment } from "@/types/executor";
 import { BatchProcessLinksTask } from "../task/BatchProcessLinks";
 import { Cluster } from "puppeteer-cluster";
+import chromium from "@sparticuz/chromium-min";
 
 export async function BatchProcessLinksExecutor(
   environment: ExecutionEnvironment<typeof BatchProcessLinksTask>
@@ -32,9 +33,60 @@ export async function BatchProcessLinksExecutor(
 
     environment.log.info(`Processing with selectors: ${selectors.join(", ")}`);
 
-    const cluster = await Cluster.launch({
-      concurrency: Cluster.CONCURRENCY_CONTEXT,
-      maxConcurrency: concurrency,
+    environment.log.info("Initializing browser cluster...");
+
+    const clusterOptions =
+      process.env.RAILWAY_ENVIRONMENT_NAME === "production"
+        ? {
+            concurrency: Cluster.CONCURRENCY_CONTEXT,
+            maxConcurrency: Math.min(concurrency, 4), // Limit max concurrent browsers
+            timeout: 30000, // 30 second timeout per page
+            retryLimit: 1, // Limit retries to prevent hanging
+            puppeteerOptions: {
+              args: [
+                ...chromium.args,
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--disable-software-rasterizer",
+                "--disable-extensions",
+                "--disable-background-networking",
+                "--disable-default-apps",
+                "--disable-sync",
+                "--disable-translate",
+                "--hide-scrollbars",
+                "--metrics-recording-only",
+                "--mute-audio",
+                "--no-first-run",
+                "--safebrowsing-disable-auto-update",
+              ],
+              executablePath: await chromium.executablePath(
+                "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+              ),
+              headless: true,
+              defaultViewport: {
+                width: 1280,
+                height: 720,
+                deviceScaleFactor: 1,
+              },
+              ignoreHTTPSErrors: true,
+            },
+            monitor: true, // Enable monitoring
+          }
+        : {
+            concurrency: Cluster.CONCURRENCY_CONTEXT,
+            maxConcurrency: concurrency,
+            puppeteerOptions: {
+              headless: false,
+            },
+          };
+
+    const cluster = await Cluster.launch(clusterOptions);
+
+    // Add monitoring for better visibility
+    cluster.on("taskerror", (err, data) => {
+      environment.log.error(`Error crawling ${data}: ${err.message}`);
     });
 
     const results: string[] = [];
@@ -104,8 +156,12 @@ export async function BatchProcessLinksExecutor(
       await cluster.queue(link.trim());
     }
 
-    await cluster.idle();
-    await cluster.close();
+    // Add proper cleanup
+    try {
+      await cluster.idle();
+    } finally {
+      await cluster.close();
+    }
 
     environment.setOutput("Results", results.join(","));
     environment.setOutput("ProcessedCount", processedCount.toString());
@@ -114,7 +170,7 @@ export async function BatchProcessLinksExecutor(
 
     return true;
   } catch (error: any) {
-    environment.log.error(error.message);
+    environment.log.error(`Cluster error: ${error.message}`);
     return false;
   }
 }
