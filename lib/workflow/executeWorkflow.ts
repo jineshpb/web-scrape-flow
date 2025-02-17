@@ -16,33 +16,35 @@ import { Browser, Page } from "puppeteer";
 import { Edge } from "@xyflow/react";
 import { LogCollector } from "@/types/Log";
 import { createLogCollector } from "../Log";
+import { FlowToExecutionPlan } from "@/lib/workflow/executionPlan";
+
 import { error } from "console";
 
 //one of the most important function
 
 export async function ExecuteWorkflow(executionId: string, nextRunAt?: Date) {
   const execution = await prisma.workflowExecution.findUnique({
-    where: {
-      id: executionId,
-    },
-    include: {
-      workflow: true,
-      phases: true,
-    },
+    where: { id: executionId },
+    include: { workflow: true, phases: true },
   });
 
-  if (!execution) {
-    throw new Error("Execution not found");
+  if (!execution) throw new Error("Execution not found");
+
+  const definition = JSON.parse(execution.definition);
+  const { executionPlan } = FlowToExecutionPlan(
+    definition.nodes,
+    definition.edges
+  );
+
+  if (!executionPlan) {
+    throw new Error("Invalid execution plan");
   }
 
-  const edges = JSON.parse(execution.definition).edges as Edge[];
-
-  //  setup the execution
-
   const environment: Environment = { phases: {} };
+  let creditsConsumed = 0;
+  let executionFailed = false;
 
   try {
-    // initialize workflow execution
     await initializeWorkflowExecution(
       executionId,
       execution.workflowId,
@@ -50,31 +52,38 @@ export async function ExecuteWorkflow(executionId: string, nextRunAt?: Date) {
     );
     await initializePhaseStatus(execution);
 
-    let creditsConsumed = 0;
-    let executionFailed = false;
-
-    // Add timeout check
     const startTime = Date.now();
-    const TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    const TIMEOUT = 30 * 60 * 1000;
 
-    for (const phase of execution.phases) {
-      // Check for timeout
+    // Execute phases according to the execution plan
+    for (const planPhase of executionPlan) {
       if (Date.now() - startTime > TIMEOUT) {
         throw new Error("Workflow execution timeout");
       }
 
-      const phaseExecution = await executeWorkflowPhase(
-        phase,
-        environment,
-        edges,
-        execution.userId
-      );
+      // Execute all nodes in this phase
+      for (const node of planPhase.nodes) {
+        const phase = execution.phases.find(
+          (p) => JSON.parse(p.node).id === node.id
+        );
 
-      creditsConsumed += phaseExecution.creditsConsumed;
-      if (!phaseExecution.success) {
-        executionFailed = true;
-        break;
+        if (!phase) continue;
+
+        const phaseExecution = await executeWorkflowPhase(
+          phase,
+          environment,
+          definition.edges,
+          execution.userId
+        );
+
+        creditsConsumed += phaseExecution.creditsConsumed;
+        if (!phaseExecution.success) {
+          executionFailed = true;
+          break;
+        }
       }
+
+      if (executionFailed) break;
     }
 
     await finalizeWorkflowExecution(
@@ -85,15 +94,8 @@ export async function ExecuteWorkflow(executionId: string, nextRunAt?: Date) {
     );
   } catch (error) {
     console.error("Workflow execution error:", error);
-    // Cleanup on error
-    await finalizeWorkflowExecution(
-      executionId,
-      execution.workflowId,
-      true, // mark as failed
-      0
-    );
+    await finalizeWorkflowExecution(executionId, execution.workflowId, true, 0);
   } finally {
-    // Always cleanup the environment
     await cleanupEnvironment(environment);
     revalidatePath(`/workflow/runs`);
   }

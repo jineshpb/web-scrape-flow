@@ -43,33 +43,44 @@ export async function ExtractDataWithAiExecutor(
 
     // Estimate tokens (rough approximation: 4 chars = 1 token)
     const estimatedTokens = Math.ceil(content.length / 4);
-    if (estimatedTokens > 60000) {
-      environment.log.error(
-        `Content too large: ~${estimatedTokens} tokens. Maximum is 60k tokens.`
-      );
-      return false;
-    }
+    // if (estimatedTokens > 60000) {
+    //   environment.log.error(
+    //     `Content too large: ~${estimatedTokens} tokens. Maximum is 60k tokens.`
+    //   );
+    //   return false;
+    // }
 
     try {
       let result: string;
 
       if (aiProvider === "openai") {
-        const openai = new OpenAI({ apiKey: plainCredentialValue });
-        const response = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: content },
-            { role: "user", content: prompt },
-          ],
-          temperature: outputFormat === "json" ? 0 : 0.7,
-          max_tokens: 16000,
+        const openai = new OpenAI({
+          apiKey: plainCredentialValue,
         });
-        result = response.choices[0].message?.content || "";
-        environment.log.info("Prompt tokens: " + response.usage?.prompt_tokens);
-        environment.log.info(
-          "Completion tokens: " + response.usage?.completion_tokens
-        );
+
+        try {
+          const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+              {
+                role: "system",
+                content: systemPrompt,
+              },
+              {
+                role: "user",
+                content: `${content}\n\nInstructions:\n${prompt}`,
+              },
+            ],
+            temperature: 0,
+            response_format: { type: "json_object" },
+          });
+
+          result = response.choices[0]?.message?.content || "";
+          environment.log.info("Successfully generated content with OpenAI");
+        } catch (error: any) {
+          environment.log.error(`OpenAI API error: ${error.message}`);
+          throw error;
+        }
       } else if (aiProvider === "deepseek") {
         const deepseek = new OpenAI({
           apiKey: plainCredentialValue,
@@ -87,38 +98,58 @@ export async function ExtractDataWithAiExecutor(
         });
         result = response.choices[0].message?.content || "";
       } else if (aiProvider === "gemini") {
-        const genAI = new GoogleGenerativeAI(plainCredentialValue);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-        // Combine system prompt, content and user prompt
-        const combinedPrompt = `
-${systemPrompt}
-
-Content to analyze:
-${content}
-
-Instructions:
-${prompt}
-
-Remember to output in ${
-          outputFormat === "json" ? "JSON format" : "plain text format"
-        }.`;
-
         try {
-          const geminiResponse = await model.generateContent(combinedPrompt);
-          let rawText = geminiResponse.response.text();
+          const genAI = new GoogleGenerativeAI(plainCredentialValue);
+          const model = genAI.getGenerativeModel({
+            model: "gemini-2.0-flash",
+            generationConfig: {
+              temperature: 0,
+              topP: 1,
+              topK: 1,
+              maxOutputTokens: 8192,
+              stopSequences: [],
+              candidateCount: 1,
+              responseMimeType: "application/json",
+            },
+          });
 
-          // Clean up markdown formatting
-          result = rawText
-            .replace(/```(?:json)?\n?([\s\S]*)\n?```/, "$1")
-            .trim();
+          // Split content into sections for processing
+          const sections = content.split(/(?=BMW \d Series|BMW M\d)/g);
+          let allResults: any[] = [];
 
-          if (!result) {
-            environment.log.error("Empty response from Gemini");
+          for (const section of sections) {
+            if (!section.trim()) continue;
+
+            const sectionPrompt = `${systemPrompt}\n\nContent to analyze:\n${section}\n\nInstructions:\n${prompt}\n\nRemember to output ONLY valid JSON without any markdown formatting or escape sequences.`;
+            const response = await model.generateContent(sectionPrompt);
+            let rawText = response.response.text();
+
+            try {
+              const parsed = JSON.parse(
+                rawText.replace(/^```(?:json)?\s*|\s*```$/g, "")
+              );
+              if (Array.isArray(parsed)) {
+                allResults = allResults.concat(parsed);
+              } else {
+                allResults.push(parsed);
+              }
+            } catch (e) {
+              environment.log.info(
+                `Failed to parse section: ${section.substring(0, 50)}...`
+              );
+              continue;
+            }
+          }
+
+          if (allResults.length === 0) {
+            environment.log.error("No valid results from any section");
             return false;
           }
 
-          environment.log.info("Successfully generated content with Gemini");
+          result = JSON.stringify(allResults);
+          environment.log.info(
+            `Successfully processed ${allResults.length} sections with Gemini`
+          );
         } catch (error: any) {
           environment.log.error(`Gemini API error: ${error.message}`);
           throw error;
