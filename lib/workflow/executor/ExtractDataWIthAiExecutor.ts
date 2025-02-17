@@ -4,6 +4,7 @@ import { ExtractDataWithAITask } from "../task/ExtractDataWithAI";
 import prisma from "@/lib/prisma";
 import { symmetricDecrypt } from "@/lib/encryption";
 import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function ExtractDataWithAiExecutor(
   environment: ExecutionEnvironment<typeof ExtractDataWithAITask>
@@ -85,6 +86,43 @@ export async function ExtractDataWithAiExecutor(
           max_tokens: 4000,
         });
         result = response.choices[0].message?.content || "";
+      } else if (aiProvider === "gemini") {
+        const genAI = new GoogleGenerativeAI(plainCredentialValue);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        // Combine system prompt, content and user prompt
+        const combinedPrompt = `
+${systemPrompt}
+
+Content to analyze:
+${content}
+
+Instructions:
+${prompt}
+
+Remember to output in ${
+          outputFormat === "json" ? "JSON format" : "plain text format"
+        }.`;
+
+        try {
+          const geminiResponse = await model.generateContent(combinedPrompt);
+          let rawText = geminiResponse.response.text();
+
+          // Clean up markdown formatting
+          result = rawText
+            .replace(/```(?:json)?\n?([\s\S]*)\n?```/, "$1")
+            .trim();
+
+          if (!result) {
+            environment.log.error("Empty response from Gemini");
+            return false;
+          }
+
+          environment.log.info("Successfully generated content with Gemini");
+        } catch (error: any) {
+          environment.log.error(`Gemini API error: ${error.message}`);
+          throw error;
+        }
       } else {
         environment.log.error("Unsupported AI provider");
         return false;

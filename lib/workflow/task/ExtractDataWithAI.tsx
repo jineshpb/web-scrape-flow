@@ -23,6 +23,7 @@ export const ExtractDataWithAITask = {
       options: [
         { label: "OpenAI", value: "openai" },
         { label: "DeepSeek", value: "deepseek" },
+        { label: "Google Gemini", value: "gemini" },
       ],
       defaultValue: "openai",
       helperText: "Select the AI provider to use",
