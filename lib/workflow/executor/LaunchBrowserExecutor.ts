@@ -63,7 +63,13 @@ export async function LaunchBrowserExecutor(
     } else {
       environment.log.info("Running in development environment");
       browser = (await puppeteer.launch({
-        headless: false,
+        headless: true,
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+          "--disable-gpu",
+        ],
       })) as unknown as CoreBrowser;
     }
 
