@@ -48,8 +48,12 @@ export async function BatchProcessLinksExecutor(
                 "--disable-setuid-sandbox",
                 "--disable-dev-shm-usage",
                 "--disable-gpu",
+                "--headless",
+                "--no-zygote",
+                "--single-process",
+                "--disable-software-rasterizer",
               ],
-              headless: "new",
+              headless: true,
             },
             monitor: true,
           }
