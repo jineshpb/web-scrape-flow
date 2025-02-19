@@ -39,40 +39,19 @@ export async function BatchProcessLinksExecutor(
       process.env.RAILWAY_ENVIRONMENT_NAME === "production"
         ? {
             concurrency: Cluster.CONCURRENCY_CONTEXT,
-            maxConcurrency: Math.min(concurrency, 4), // Limit max concurrent browsers
-            timeout: 30000, // 30 second timeout per page
-            retryLimit: 1, // Limit retries to prevent hanging
+            maxConcurrency: Math.min(concurrency, 4),
+            timeout: 30000,
+            retryLimit: 1,
             puppeteerOptions: {
               args: [
-                ...chromium.args,
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
                 "--disable-dev-shm-usage",
                 "--disable-gpu",
-                "--disable-software-rasterizer",
-                "--disable-extensions",
-                "--disable-background-networking",
-                "--disable-default-apps",
-                "--disable-sync",
-                "--disable-translate",
-                "--hide-scrollbars",
-                "--metrics-recording-only",
-                "--mute-audio",
-                "--no-first-run",
-                "--safebrowsing-disable-auto-update",
               ],
-              executablePath: await chromium.executablePath(
-                "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
-              ),
-              headless: true,
-              defaultViewport: {
-                width: 1280,
-                height: 720,
-                deviceScaleFactor: 1,
-              },
-              ignoreHTTPSErrors: true,
+              headless: "new",
             },
-            monitor: true, // Enable monitoring
+            monitor: true,
           }
         : {
             concurrency: Cluster.CONCURRENCY_CONTEXT,
