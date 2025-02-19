@@ -44,16 +44,17 @@ export async function BatchProcessLinksExecutor(
             retryLimit: 1,
             puppeteerOptions: {
               args: [
+                ...chromium.args,
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
                 "--disable-dev-shm-usage",
-                "--disable-gpu",
-                "--headless",
-                "--no-zygote",
                 "--single-process",
-                "--disable-software-rasterizer",
               ],
+              executablePath: await chromium.executablePath(
+                "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+              ),
               headless: true,
+              defaultViewport: chromium.defaultViewport,
             },
             monitor: true,
           }
