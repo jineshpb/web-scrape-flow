@@ -57,6 +57,12 @@ export async function BatchProcessLinksExecutor(
             concurrency: Cluster.CONCURRENCY_CONTEXT,
             maxConcurrency: concurrency,
             puppeteerOptions: {
+              args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+              ],
               headless: false,
             },
           };
