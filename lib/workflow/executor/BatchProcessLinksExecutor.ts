@@ -161,8 +161,12 @@ export async function BatchProcessLinksExecutor(
       environment.setOutput("Html", combinedHtml.trim());
 
       return true;
-    } catch (error) {
-      environment.log.error(`Browser launch failed: ${error.message}`);
+    } catch (error: any) {
+      if (error instanceof Error) {
+        environment.log.error(`Browser launch failed: ${error.message}`);
+      } else {
+        environment.log.error("Browser launch failed: Unknown error");
+      }
       // Try alternative launch method if first attempt fails
       clusterOptions.puppeteerOptions.args.push(
         "--disable-features=site-per-process",
