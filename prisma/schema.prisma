@@ -5,9 +5,25 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+//   directUrl = env("DIRECT_URL")
+// }
+
+// datasource db {
+//   provider = "sqlite"
+//   url      = "file:../../dev.db"  // Points to prisma/dev.db
+// }
+
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgres://postgres:gOrWHV3KhMdvVYKq2NvzzQi3jQkG9IbszLaRZ52xKvZiIWDjzXueX7Dn9jawEfoh@49.207.248.233:5432/postgres"
 }
 
 //TODO: change to sentence case
