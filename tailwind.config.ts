@@ -104,5 +104,11 @@ const config: Config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
+  safelist: [
+    {
+      pattern:
+        /^(bg|text|border|hover:bg|ring|stroke)-(pink|blue|green|purple|orange|yellow|red)-(50|100|200|300|400|500|600|700|800|900)\/?(10|20|90)?$/,
+    },
+  ],
 };
 export default config;

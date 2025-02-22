@@ -53,6 +53,10 @@ export const ExtractDataWithAITask = {
       helperText: "Choose between structured JSON data or plain text summary",
     },
   ] as const,
+  theme: {
+    color: "rose-400",
+    gradient: "from-rose-400/10 to-transparent",
+  },
   outputs: [
     {
       name: "Extracted data",

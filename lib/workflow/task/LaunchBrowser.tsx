@@ -6,10 +6,14 @@ export const LaunchBrowserTask = {
   type: TaskType.LAUNCH_BROWSER,
   label: "Launch Browser",
   icon: (props: LucideProps) => (
-    <GlobeIcon className=" stroke-pink-400 w-4 h-4" {...props} />
+    <GlobeIcon className="stroke-pink-400 w-4 h-4" {...props} />
   ),
   isEntryPoint: true,
   credits: 5,
+  theme: {
+    color: "pink-400",
+    gradient: "from-pink-400/10 to-transparent",
+  },
   inputs: [
     {
       name: "website Url",

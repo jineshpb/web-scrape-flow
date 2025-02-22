@@ -35,6 +35,10 @@ export const ElementIteratorTask = {
       description: "Wait for the element to be present",
     },
   ] as const,
+  theme: {
+    color: "blue-400",
+    gradient: "from-blue-400/10 to-transparent",
+  },
   outputs: [
     {
       name: "Links",

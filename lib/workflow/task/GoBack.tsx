@@ -32,4 +32,8 @@ export const GoBackTask = {
       description: "Navigation back was successful",
     },
   ] as const,
+  theme: {
+    color: "blue-400",
+    gradient: "from-blue-400/10 to-transparent",
+  },
 } satisfies WorkflowTask;

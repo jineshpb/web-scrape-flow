@@ -29,7 +29,7 @@ export function NodeInput({
   return (
     <div
       className={cn(
-        "flex flex-col justify-start relative p-3 bg-secondary",
+        "flex flex-col justify-start relative p-3 ",
         hasErrors && "bg-destructive/30"
       )}
     >

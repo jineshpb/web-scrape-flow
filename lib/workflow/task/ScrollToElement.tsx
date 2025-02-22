@@ -24,6 +24,10 @@ export const ScrollToElementTask = {
       helperText: "CSS selector for the element to scroll to",
     },
   ] as const,
+  theme: {
+    color: "orange-400",
+    gradient: "from-orange-400/10 to-transparent",
+  },
   outputs: [
     {
       name: "Web page",

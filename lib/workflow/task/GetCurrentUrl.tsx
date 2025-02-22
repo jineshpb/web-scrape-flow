@@ -29,4 +29,8 @@ export const GetCurrentUrlTask = {
       description: "The browser page instance",
     },
   ] as const,
+  theme: {
+    color: "blue-400",
+    gradient: "from-blue-400/10 to-transparent",
+  },
 } satisfies WorkflowTask;

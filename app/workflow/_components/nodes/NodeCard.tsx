@@ -3,6 +3,8 @@
 import useFlowValidation from "@/hooks/useFlowValidation";
 import { cn } from "@/lib/utils";
 import { useReactFlow } from "@xyflow/react";
+import { TaskRegistry } from "@/lib/workflow/task/registry";
+import { TaskType } from "@/types/task";
 
 function NodeCard({
   children,
@@ -16,6 +18,24 @@ function NodeCard({
   const { getNode, setCenter } = useReactFlow();
   const { invalidInputs } = useFlowValidation();
   const hasInvalidInputs = invalidInputs.some((node) => node.nodeId === nodeId);
+
+  const node = getNode(nodeId);
+  // Get the actual task type from node data
+  const taskType = node?.data?.type as TaskType;
+  const task = TaskRegistry[taskType];
+  const colorBase = task?.theme?.color?.split("-")[0];
+
+  // Debug logs with correct border color logic
+  console.log({
+    nodeId,
+    isSelected,
+    taskType,
+    nodeType: node?.type,
+    nodeData: node?.data,
+    task,
+    colorBase,
+    borderColor: isSelected ? `var(--${colorBase}-400)` : `hsl(var(--border))`,
+  });
 
   return (
     <div
@@ -33,9 +53,14 @@ function NodeCard({
           duration: 500,
         });
       }}
+      style={{
+        borderColor:
+          isSelected && colorBase
+            ? `var(--${colorBase}-400)`
+            : `hsl(var(--border))`,
+      }}
       className={cn(
-        "rounded-xl cursor-pointer bg-background border-2 gap-1 border-separate w-[420px] text-xs  pb-2 flex flex-col",
-        isSelected && "border-primary",
+        "rounded-xl cursor-pointer bg-background border-2 gap-1 border-separate w-[420px] text-xs pb-2 flex flex-col transition-colors duration-200",
         hasInvalidInputs && "border-destructive border-2"
       )}
     >

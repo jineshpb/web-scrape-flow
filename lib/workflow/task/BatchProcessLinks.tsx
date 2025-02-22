@@ -53,4 +53,8 @@ export const BatchProcessLinksTask = {
       description: "Combined HTML from all successful extractions",
     },
   ] as const,
+  theme: {
+    color: "purple-400",
+    gradient: "from-purple-400/10 to-transparent",
+  },
 } satisfies WorkflowTask;

@@ -45,6 +45,10 @@ export const WaitForElementTask = {
       ],
     },
   ] as const,
+  theme: {
+    color: "amber-400",
+    gradient: "from-amber-400/10 to-transparent",
+  },
   outputs: [
     {
       name: "Web page",

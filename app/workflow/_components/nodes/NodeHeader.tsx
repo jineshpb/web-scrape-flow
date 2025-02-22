@@ -15,6 +15,7 @@ import {
   Sparkles,
   Trash2,
   X,
+  MoreHorizontal,
 } from "lucide-react";
 import { toast } from "sonner";
 import React, { useState } from "react";
@@ -25,6 +26,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
+import { DuplicateWorkflow } from "@/actions/workflows/duplicateWorkflow";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 function NodeHeader({
   taskType,
@@ -114,34 +122,90 @@ function NodeHeader({
 
   const hasNotes = (getNode(nodeId)?.data?.notes as string)?.length > 0;
 
+  // Extract the color base (e.g., "pink" from "pink-400")
+  const colorBase = task.theme.color.split("-")[0];
+
+  const handleDuplicateNode = () => {
+    try {
+      const sourceNode = getNode(nodeId);
+      if (!sourceNode) return;
+
+      // Create new node with same data but new ID
+      const newNode = {
+        ...sourceNode,
+        id: `${sourceNode.type}-${Math.random().toString(36).substr(2, 9)}`,
+        position: {
+          x: sourceNode.position.x + 250,
+          y: sourceNode.position.y + 50,
+        },
+      };
+
+      setNodes((nodes) => [...nodes, newNode]);
+      toast.success("Node duplicated");
+    } catch (error) {
+      console.error("Failed to duplicate node:", error);
+      toast.error("Failed to duplicate node");
+    }
+  };
+
   return (
-    <div className="flex flex-col">
-      <div className="flex items-center gap-2 p-2">
-        <task.icon size={16} />
+    <div
+      className={`flex flex-col bg-gradient-to-b ${task.theme.gradient} rounded-t-lg border-b border-gray-200`}
+    >
+      <div className={`flex items-center gap-2 p-2 cursor-grab drag-handle`}>
+        <task.icon size={16} className={`stroke-${task.theme.color}`} />
         <div className="flex justify-between items-center w-full">
           <p className="text-xs font-bold uppercase text-muted-foreground">
             {task.label}
           </p>
           <div className="flex gap-2 items-center">
-            {task.isEntryPoint && <Badge>Entry Point</Badge>}
-            <Badge className="gap-2 flex items-center text-xs">
+            {task.isEntryPoint && (
+              <Badge
+                className={`
+                  bg-${task.theme.color}/10 
+                  text-${task.theme.color}
+                  border-${task.theme.color}/20
+                  hover:bg-${task.theme.color}/20
+                  transition-colors
+                `}
+              >
+                Entry Point
+              </Badge>
+            )}
+            <Badge
+              className={`
+                gap-2 flex items-center text-xs
+                bg-${task.theme.color} 
+                text-${colorBase}-50
+                border-${task.theme.color}
+                hover:bg-${task.theme.color}/90
+                transition-colors
+              `}
+            >
               <CoinsIcon size={12} />
               {task.credits}
             </Badge>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => deleteElements({ nodes: [{ id: nodeId }] })}
-            >
-              <Trash2 size={12} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="drag-handle cursor-grab"
-            >
-              <GripVertical size={20} />
-            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="shrink-0">
+                  <MoreHorizontal size={16} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleDuplicateNode}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  Duplicate
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => deleteElements({ nodes: [{ id: nodeId }] })}
+                  className="text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -150,11 +214,11 @@ function NodeHeader({
           {task.description}
         </div>
       )}
-      <div className="px-3 pb-2">
+      <div className="px-3 pb-2 bg-none">
         <div className="flex gap-2 items-start">
           <textarea
             placeholder="Add notes about this node..."
-            className={`w-full text-xs p-1 bg-muted border rounded resize-none focus:outline-none focus:ring-1 ${
+            className={`w-full text-xs p-2 bg-white border rounded-lg resize-none focus:outline-none focus:ring-1 ${
               isGenerating ? "opacity-50" : ""
             }`}
             value={(getNode(nodeId)?.data?.notes as string) || ""}

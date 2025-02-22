@@ -31,4 +31,8 @@ export const FillInputTask = {
       type: TaskParamType.BROWSER_INSTANCE,
     },
   ] as const,
+  theme: {
+    color: "orange-400",
+    gradient: "from-orange-400/10 to-transparent",
+  },
 } satisfies WorkflowTask;

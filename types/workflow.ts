@@ -17,6 +17,10 @@ export interface WorkflowTask {
   credits: number;
   inputs: readonly TaskParam[];
   outputs: readonly TaskParam[];
+  theme: {
+    color: string;
+    gradient: string;
+  };
 }
 
 export type WorkflowExecutionPlanPhase = {

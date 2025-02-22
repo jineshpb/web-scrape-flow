@@ -27,4 +27,8 @@ export const PageToHtmlTask = {
       type: TaskParamType.BROWSER_INSTANCE,
     },
   ] as const,
+  theme: {
+    color: "pink-400",
+    gradient: "from-pink-400/10 to-transparent",
+  },
 } satisfies WorkflowTask;

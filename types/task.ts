@@ -1,3 +1,5 @@
+import { LucideProps } from "lucide-react";
+
 export enum TaskType {
   LAUNCH_BROWSER = "LAUNCH_BROWSER",
   PAGE_TO_HTML = "PAGE_TO_HTML",
@@ -40,3 +42,4 @@ export interface TaskParam {
   useTextarea?: boolean;
   [key: string]: any;
 }
+

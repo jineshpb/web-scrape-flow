@@ -6,6 +6,16 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+
+  /* Theme Colors */
+  --pink-400: rgb(244 114 182);
+  --rose-400: rgb(249 115 128);
+  --blue-400: rgb(96 165 250);
+  --green-400: rgb(74 222 128);
+  --purple-400: rgb(192 132 252);
+  --orange-400: rgb(251 146 60);
+  --yellow-400: rgb(250 204 21);
+  --red-400: rgb(251 113 133);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,6 +23,9 @@
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
+
+    /* Dark Theme Colors (if needed) */
+    --pink-400: rgb(244 114 182);
   }
 }
 
@@ -72,7 +85,6 @@
     --chart-2: 140 74% 44%;
   }
 }
-
 
 @layer base {
   * {

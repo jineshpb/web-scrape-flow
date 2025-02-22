@@ -25,6 +25,10 @@ export const ExtractHtmlFromElementsTask = {
       helperText: "Selector from which html extracted",
     },
   ] as const,
+  theme: {
+    color: "purple-400",
+    gradient: "from-purple-400/10 to-transparent",
+  },
   outputs: [
     {
       name: "Extracted HTML",

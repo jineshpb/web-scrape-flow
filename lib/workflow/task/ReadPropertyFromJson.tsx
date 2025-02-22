@@ -29,6 +29,10 @@ export const ReadPropertyFromJsonTask = {
       required: true,
     },
   ] as const,
+  theme: {
+    color: "orange-400",
+    gradient: "from-orange-400/10 to-transparent",
+  },
   outputs: [
     {
       name: "Property value",

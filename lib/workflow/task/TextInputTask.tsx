@@ -18,6 +18,10 @@ export const TextInputTask = {
       description: "Enter CSS selector (e.g., #id, .class) or plain text",
     },
   ] as const,
+  theme: {
+    color: "blue-400",
+    gradient: "from-blue-400/10 to-transparent",
+  },
   outputs: [
     {
       name: "Value",

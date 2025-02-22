@@ -33,4 +33,8 @@ export const ExtractTextFromElementsTask = {
       type: TaskParamType.STRING,
     },
   ] as const,
+  theme: {
+    color: "pink-400",
+    gradient: "from-pink-400/10 to-transparent",
+  },
 } satisfies WorkflowTask;
