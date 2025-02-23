@@ -150,9 +150,11 @@ function NodeHeader({
 
   return (
     <div
-      className={`flex flex-col bg-gradient-to-b ${task.theme.gradient} rounded-t-lg border-b border-gray-200`}
+      className={`flex flex-col bg-gradient-to-b ${task.theme.gradient} rounded-t-2xl border-b border-border`}
     >
-      <div className={`flex items-center gap-2 p-2 cursor-grab drag-handle`}>
+      <div
+        className={`flex items-center gap-2 py-2 px-3 cursor-grab drag-handle`}
+      >
         <task.icon size={16} className={`stroke-${task.theme.color}`} />
         <div className="flex justify-between items-center w-full">
           <p className="text-xs font-bold uppercase text-muted-foreground">
@@ -215,43 +217,55 @@ function NodeHeader({
         </div>
       )}
       <div className="px-3 pb-2 bg-none">
-        <div className="flex gap-2 items-start">
-          <textarea
-            placeholder="Add notes about this node..."
-            className={`w-full text-xs p-2 bg-white border rounded-lg resize-none focus:outline-none focus:ring-1 ${
-              isGenerating ? "opacity-50" : ""
-            }`}
-            value={(getNode(nodeId)?.data?.notes as string) || ""}
-            onChange={(e) => handleNotesChange(e.target.value)}
-            rows={3}
-            disabled={isGenerating}
-          />
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={hasNotes ? clearNote : generateCaption}
-                  disabled={isGenerating}
-                  className="shrink-0"
-                >
-                  {isGenerating ? (
-                    <Loader2 size={12} className="animate-spin" />
-                  ) : hasNotes ? (
-                    <X size={12} />
-                  ) : (
-                    <Sparkles size={12} />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>
-                  {hasNotes ? "Clear note" : "Generate custom note using AI"}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        <div className="relative flex gap-2 items-start">
+          <div className="relative w-full">
+            <textarea
+              placeholder="Add notes about this node..."
+              className={`w-full text-xs p-2 pr-8 bg-background border rounded-lg resize-none focus:outline-none focus:ring-1 ${
+                isGenerating ? "opacity-50" : ""
+              }`}
+              value={(getNode(nodeId)?.data?.notes as string) || ""}
+              onChange={(e) => handleNotesChange(e.target.value)}
+              rows={3}
+              disabled={isGenerating}
+            />
+            <div
+              className={`text-gray-500 absolute right-2 top-2 ${
+                hasNotes ? "right-5" : ""
+              }`}
+            >
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={hasNotes ? clearNote : generateCaption}
+                      disabled={isGenerating}
+                      className={`h-6 w-6 ${
+                        isGenerating ? "animate-spin" : ""
+                      } `}
+                    >
+                      {isGenerating ? (
+                        <Loader2 size={12} className="animate-spin" />
+                      ) : hasNotes ? (
+                        <X size={12} />
+                      ) : (
+                        <Sparkles size={12} />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      {hasNotes
+                        ? "Clear note"
+                        : "Generate custom note using AI"}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
         </div>
       </div>
     </div>

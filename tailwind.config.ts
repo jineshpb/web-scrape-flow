@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-const config: Config = {
+const config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -110,5 +110,6 @@ const config: Config = {
         /^(bg|text|border|hover:bg|ring|stroke)-(pink|blue|green|purple|orange|yellow|red)-(50|100|200|300|400|500|600|700|800|900)\/?(10|20|90)?$/,
     },
   ],
-};
+} satisfies Config;
+
 export default config;

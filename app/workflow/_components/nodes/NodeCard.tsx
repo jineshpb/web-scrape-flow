@@ -60,7 +60,7 @@ function NodeCard({
             : `hsl(var(--border))`,
       }}
       className={cn(
-        "rounded-xl cursor-pointer bg-background border-2 gap-1 border-separate w-[420px] text-xs pb-2 flex flex-col transition-colors duration-200",
+        "rounded-2xl cursor-pointer bg-background border gap-1 border-separate w-[420px] text-xs pb-2 flex flex-col transition-colors duration-200 shadow-sm",
         hasInvalidInputs && "border-destructive border-2"
       )}
     >
