@@ -38,7 +38,7 @@ export async function BatchProcessLinksExecutor(
     const clusterOptions = {
       concurrency: Cluster.CONCURRENCY_CONTEXT,
       maxConcurrency: Math.min(concurrency, 4),
-      timeout: 10000000, // Increased timeout as suggested
+      timeout: 10000000,
       retryLimit: 1,
       puppeteerOptions: {
         args: [
@@ -57,6 +57,7 @@ export async function BatchProcessLinksExecutor(
           "--disable-backgrounding-occluded-windows",
           "--disable-breakpad",
           "--enable-features=NetworkService,NetworkServiceInProcess",
+          "--single-process",
         ],
         executablePath: await chromium.executablePath(
           "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
@@ -64,6 +65,7 @@ export async function BatchProcessLinksExecutor(
         headless: true,
         ignoreHTTPSErrors: true,
         defaultViewport: chromium.defaultViewport,
+        protocolTimeout: 100000,
       },
       monitor: true,
     };
