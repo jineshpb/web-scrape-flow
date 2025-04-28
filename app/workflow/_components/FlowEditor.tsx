@@ -105,7 +105,7 @@ function FlowEditor({ workflow }: { workflow: workflow }) {
   const onConnect = useCallback(
     (connection: Connection) => {
       console.log("@onConnect", connection);
-      setEdges((eds) => addEdge({ ...connection, animated: true }, eds));
+      setEdges((eds) => addEdge({ ...connection, animated: false }, eds));
       if (!connection.targetHandle) return;
       //remove input value if is present on connection
 

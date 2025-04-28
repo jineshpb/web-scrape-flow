@@ -85,8 +85,15 @@ export async function GET(request: Request) {
               userId: workflow.userId,
               status: ExecutionPhaseStatus.CREATED,
               number: phase.phase,
-              node: JSON.stringify(node),
+              node: JSON.stringify({
+                ...node,
+                data: {
+                  ...node.data,
+                  notes: node.data.notes || "",
+                },
+              }),
               name: TaskRegistry[node.data.type].label,
+              definition: workflow.definition,
               inputs: "{}",
               outputs: "{}",
             }));

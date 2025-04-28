@@ -22,7 +22,24 @@ import {
   Loader2,
   LucideIcon,
   WorkflowIcon,
+  StopCircle,
+  StickyNote,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import {
   Card,
@@ -47,6 +64,13 @@ import { cn } from "@/lib/utils";
 import { LogLevel } from "@/types/Log";
 import PhaseStatusBadge from "./PhaseStatusBadge";
 import ReactCountUpWrapper from "@/components/ReactCountUpWrapper";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Textarea } from "@/components/ui/textarea";
 
 type ExecutionData = Awaited<ReturnType<typeof getWorkflowExecutionWithPhases>>;
 
@@ -56,6 +80,7 @@ export default function ExecutionViewer({
   initialData: ExecutionData;
 }) {
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
+  const router = useRouter();
 
   const query = useQuery<ExecutionData>({
     queryKey: ["execution", initialData?.id],
@@ -97,6 +122,31 @@ export default function ExecutionViewer({
   );
 
   const creditsConsumed = GetPhasesTotalCost(query.data?.phases || []);
+
+  const handleStopWorkflow = async () => {
+    try {
+      const response = await fetch("/api/workflow/stop", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ executionId: query.data?.id }),
+      });
+
+      if (response.ok) {
+        toast.success("Workflow stopped successfully");
+        router.refresh();
+      } else {
+        toast.error("Failed to stop workflow");
+      }
+    } catch (error) {
+      toast.error("Something went wrong while stopping the workflow");
+    }
+  };
+
+  const showStopButton = query.data?.status === WorkflowExecutionStatus.RUNNING;
+
+  console.log("@@QERY", query.data?.phases[1].node);
 
   return (
     <div className="flex w-full h-full">
@@ -142,6 +192,40 @@ export default function ExecutionViewer({
             label="Credits consumed"
             value={creditsConsumed}
           />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <ExecutionLabel
+                icon={CoinsIcon}
+                label="Credits consumed"
+                value={creditsConsumed}
+              />
+            </div>
+            {showStopButton && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm">
+                    <StopCircle className="mr-2 h-4 w-4" />
+                    Stop Workflow
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Stop Workflow Execution</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to stop this workflow? This action
+                      cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleStopWorkflow}>
+                      Stop Workflow
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </div>
         </div>
         <Separator />
         <div className="flex justify-center items-center py-2 px-4">
@@ -152,23 +236,59 @@ export default function ExecutionViewer({
         </div>
         <Separator />
         <div className="overflow-auto h-full px-2 py-4">
-          {query.data?.phases.map((phase, index) => (
-            <Button
-              key={phase.id}
-              className="w-full justify-between"
-              variant={selectedPhase === phase.id ? "secondary" : "ghost"}
-              onClick={() => {
-                if (isRunning) return;
-                setSelectedPhase(phase.id);
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <Badge variant="outline">{index + 1}</Badge>
-                <p className="font-semibold">{phase.name}</p>
+          {query.data?.phases.map((phase, index) => {
+            const nodeData = JSON.parse(phase.node);
+            const notes = nodeData.data.notes;
+
+            return (
+              <div key={phase.id} className="space-y-2">
+                <Button
+                  className="w-full justify-between"
+                  variant={selectedPhase === phase.id ? "secondary" : "ghost"}
+                  onClick={() => {
+                    if (isRunning) return;
+                    setSelectedPhase(phase.id);
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">{index + 1}</Badge>
+                    <p className="font-semibold">{phase.name}</p>
+                  </div>
+                  <PhaseStatusBadge
+                    status={phase.status as ExecutionPhaseStatus}
+                  />
+                </Button>
+
+                {notes && (
+                  <Collapsible className="ml-9">
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors h-6 px-2 py-1"
+                      >
+                        <ChevronRight
+                          size={14}
+                          className="collapsible-chevron"
+                        />
+                        <StickyNote size={14} />
+                        <span>Notes</span>
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="mt-2 rounded-md bg-muted/50 p-3">
+                        <ScrollArea className="max-h-[100px]">
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                            {notes}
+                          </p>
+                        </ScrollArea>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                )}
               </div>
-              <PhaseStatusBadge status={phase.status as ExecutionPhaseStatus} />
-            </Button>
-          ))}
+            );
+          })}
         </div>
       </aside>
       <div className="flex w-full h-full">
@@ -283,7 +403,7 @@ function ParameterViewer({
                 <p className="text-sm text-muted-foreground flex-1 basis-1/3">
                   {key}
                 </p>
-                <Input
+                <Textarea
                   readOnly
                   className="flex-1 basis-2/3"
                   value={value as string}

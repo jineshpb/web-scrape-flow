@@ -150,7 +150,7 @@ function NodeHeader({
 
   return (
     <div
-      className={`flex flex-col bg-gradient-to-b ${task.theme.gradient} rounded-t-2xl border-b border-border`}
+      className={`flex flex-col bg-gradient-to-b ${task.theme.gradient} rounded-t-xl border-b border-border`}
     >
       <div
         className={`flex items-center gap-2 py-2 px-3 cursor-grab drag-handle`}
