@@ -13,6 +13,7 @@ import {
   FileTextIcon,
   MoreVerticalIcon,
   MoveRightIcon,
+  PencilLineIcon,
   PlayIcon,
   Shuffle,
   ShuffleIcon,
@@ -40,6 +41,7 @@ import ExecutionStatusIndicator, {
 import { format, formatDistanceToNow } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import DuplicateWorkflowDialog from "./DuplicateWorkflowDialog";
+import RenameWorkflowDialog from "./RenameWorkflowDialog";
 
 const statusColors = {
   [WorkflowStatus.DRAFT]: "bg-yellow-400 text-yellow-600",
@@ -66,7 +68,7 @@ function WorkflowCard({ workflow }: { workflow: workflow }) {
           </div>
           <div>
             <h3 className="text-base font-bold text-muted-foreground flex items-center">
-              <TooltipWrapper content={workflow.description}>
+              <TooltipWrapper content={workflow.description || ""}>
                 <Link
                   href={`/workflow/editor/${workflow.id}`}
                   className="flex items-center hover:underline"
@@ -107,6 +109,7 @@ function WorkflowCard({ workflow }: { workflow: workflow }) {
           <WorkflowActions
             workflowName={workflow.name}
             workflowId={workflow.id}
+            workflowDescription={workflow.description || undefined}
           />
         </div>
       </CardContent>
@@ -118,17 +121,28 @@ function WorkflowCard({ workflow }: { workflow: workflow }) {
 function WorkflowActions({
   workflowName,
   workflowId,
+  workflowDescription,
 }: {
   workflowName: string;
   workflowId: string;
+  workflowDescription?: string;
 }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showRenameDialog, setShowRenameDialog] = useState(false);
+
   return (
     <>
       <DeleteWorkflowDialog
         open={showDeleteDialog}
         setOpen={setShowDeleteDialog}
         workflowName={workflowName}
+        workflowId={workflowId}
+      />
+      <RenameWorkflowDialog
+        open={showRenameDialog}
+        setOpen={setShowRenameDialog}
+        workflowName={workflowName}
+        workflowDescription={workflowDescription}
         workflowId={workflowId}
       />
       <DropdownMenu>
@@ -145,8 +159,15 @@ function WorkflowActions({
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
+            className="text-gray-900 flex items-center gap-2"
+            onSelect={() => setShowRenameDialog(true)}
+          >
+            <PencilLineIcon size={16} />
+            Rename
+          </DropdownMenuItem>
+          <DropdownMenuItem
             className="text-destructive flex items-center gap-2"
-            onSelect={() => setShowDeleteDialog((prev) => !prev)}
+            onSelect={() => setShowDeleteDialog(true)}
           >
             <TrashIcon size={16} />
             Delete

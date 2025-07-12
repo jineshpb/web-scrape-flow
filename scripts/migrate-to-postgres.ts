@@ -7,7 +7,7 @@ const sqlitePrisma = new SQLitePrisma();
 const postgresPrisma = new PrismaClient({
   datasources: {
     db: {
-      url: "postgres://postgres:gOrWHV3KhMdvVYKq2NvzzQi3jQkG9IbszLaRZ52xKvZiIWDjzXueX7Dn9jawEfoh@49.207.248.233:5432/postgres",
+      url: "postgres://postgres:oE6FamLD6gikAs6oEDytDo63sdmEBdKuvKRintT7fRhJj6n5rFDDihlX5ZkFZ5YF@i0wosgk8w48wcws08k4kwcw8:5432/postgres",
     },
   },
 });
