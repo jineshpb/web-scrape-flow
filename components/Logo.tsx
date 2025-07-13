@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { SquareDashedMousePointer } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
@@ -20,7 +21,14 @@ const Logo = ({
         )}
       >
         <div className="rounded-xl bg-gradient-to-r from-[#d97757]/80 to-[#d97757] dark:from-[#d97757] dark:to-[#d97757] p-2">
-          <SquareDashedMousePointer size={iconSize} className="stroke-white" />
+          {/* <SquareDashedMousePointer size={iconSize} className="stroke-white" /> */}
+          <Image
+            src="/logo.svg"
+            alt="logo"
+            width={24}
+            height={24}
+            className="fill-white"
+          />
         </div>
         <div>
           <span className="bg-gradient-to-r from-[#d97757]/80 font-bold to-[#d97757] dark:from-[#d97757]/80 dark:to-[#d97757] bg-clip-text text-transparent">
