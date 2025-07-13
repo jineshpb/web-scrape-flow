@@ -23,6 +23,7 @@ import { AppNode } from "@/types/appNode";
 import DeletableEdge from "./edges/DeletableEdge";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import NodeComponent, { WorkflowContext } from "./nodes/NodeComponent";
+import { useTheme } from "next-themes";
 
 //this is the actual editor component. It is the main component that renders the flow editor.
 //this is the actual editor component. It is the main component that renders the flow editor.
@@ -50,6 +51,7 @@ function FlowEditor({ workflow }: { workflow: workflow }) {
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { setViewport, screenToFlowPosition, updateNodeData } = useReactFlow();
+  const { resolvedTheme } = useTheme();
 
   //below we are restoring the state of the workflow from the database on relaod
   //also setting the position and zoom of the viewport
@@ -174,7 +176,9 @@ function FlowEditor({ workflow }: { workflow: workflow }) {
 
   return (
     <WorkflowContext.Provider value={workflow.id}>
-      <main className="h-full w-full">
+      <main
+        className={`h-full w-full ${resolvedTheme === "dark" ? "dark" : ""}`}
+      >
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -190,7 +194,13 @@ function FlowEditor({ workflow }: { workflow: workflow }) {
           isValidConnection={isValidConnection}
         >
           <Controls position="top-left" fitViewOptions={fitViewOptions} />
-          <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+          <Background
+            variant={BackgroundVariant.Dots}
+            gap={12}
+            size={1}
+            bgColor={resolvedTheme === "dark" ? "#18181b" : "#faf9f5"}
+            color={resolvedTheme === "dark" ? "#52525b" : "#d6d3d1"}
+          />
         </ReactFlow>
       </main>
     </WorkflowContext.Provider>

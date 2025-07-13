@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useReactFlow } from "@xyflow/react";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { TaskType } from "@/types/task";
+import { useTheme } from "next-themes";
 
 function NodeCard({
   children,
@@ -25,6 +26,8 @@ function NodeCard({
   const task = TaskRegistry[taskType];
   const colorBase = task?.theme?.color?.split("-")[0];
 
+  const { resolvedTheme } = useTheme();
+
   // Debug logs with correct border color logic
   console.log({
     nodeId,
@@ -34,7 +37,7 @@ function NodeCard({
     nodeData: node?.data,
     task,
     colorBase,
-    borderColor: isSelected ? `var(--${colorBase}-400)` : `hsl(var(--border))`,
+    borderColor: isSelected ? `hsl(var(--border))` : `hsl(var(--border))`,
   });
 
   return (
@@ -56,11 +59,13 @@ function NodeCard({
       style={{
         borderColor:
           isSelected && colorBase
-            ? `var(--${colorBase}-400)`
-            : `hsl(var(--border))`,
+            ? `hsl(var(--input))`
+            : resolvedTheme === "dark"
+            ? `hsl(var(--secondary-foreground))` // or any dark border variable you want
+            : `hsl(var(--secondary))`,
       }}
       className={cn(
-        "rounded-2xl cursor-pointer bg-background border-2 gap-1 border-separate w-[420px] text-xs pb-2 flex flex-col transition-colors duration-200 shadow-sm",
+        "rounded-2xl cursor-pointer bg-primary-foreground dark:bg-background border-4  dark:border-border gap-1 border-separate w-[420px] text-xs pb-2 flex flex-col transition-colors duration-200 shadow-sm",
         hasInvalidInputs && "border-destructive border-2"
       )}
     >

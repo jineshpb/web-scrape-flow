@@ -19,12 +19,13 @@ function UserAvailableCreditsBadge() {
     <Link
       href="/billing"
       className={cn(
-        "w-full space-x-2 items-center",
+        "w-full space-x-2 items-start justify-start ",
         buttonVariants({ variant: "outline" })
       )}
     >
+      <span className="text-sm text-muted-foreground">Your credits:</span>
       <CoinsIcon size={20} className="text-primary" />
-      <span className="font-semibold capitalize">
+      <span className="font-semibold capitalize rounded-xl">
         {query.isLoading && <Loader2Icon className="animate-spin w-4 h-4" />}
         {!query.isLoading && query.data && (
           <ReactCountUpWrapper value={query.data} />

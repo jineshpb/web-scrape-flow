@@ -9,6 +9,7 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import { X } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export default function DeletableEdge(props: EdgeProps) {
   const [edgePath, labelX, labelY] = getBezierPath({
@@ -16,6 +17,7 @@ export default function DeletableEdge(props: EdgeProps) {
     curvature: 0.1, // Adjust this value to control the curve (0.1 to 1.0)
   });
   const { setEdges } = useReactFlow();
+  const { resolvedTheme } = useTheme();
 
   return (
     <>
@@ -25,6 +27,10 @@ export default function DeletableEdge(props: EdgeProps) {
         style={{
           ...props.style,
           strokeWidth: 2,
+          stroke:
+            resolvedTheme === "dark"
+              ? "hsl(var(--border))"
+              : "hsl(var(--border))",
         }}
       />
 

@@ -52,7 +52,7 @@ function CreditsPurchase() {
           {CreditsPack.map((pack) => (
             <div
               key={pack.id}
-              className="flex items-center p-3 rounded-lg space-x-3 bg-secondary/50 hover:bg-secondary transition-colors"
+              className="flex items-center p-3 rounded-lg space-x-3 bg-secondary/50 hover:bg-secondary dark:bg-foreground/10 dark:hover:bg-foreground/20 transition-colors"
               onClick={() => setSelectedPack(pack.id)}
             >
               <RadioGroupItem value={pack.id} id={pack.id} />

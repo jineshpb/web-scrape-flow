@@ -72,12 +72,12 @@ function DuplicateWorkflowDialog({ workflowId }: { workflowId: string }) {
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          size={"icon"}
+          size={"sm"}
           className={cn(
-            "ml-2 transition-opacity duration-200 opacity-0 group-hover/card:opacity-100"
+            "ml-2 transition-opacity  duration-200 opacity-0 group-hover/card:opacity-100 "
           )}
         >
-          <CopyIcon className="w-4 h-4 text-muted-foreground cursor-pointer" />
+          <CopyIcon className="w-2 h-2 text-muted-foreground cursor-pointer" />
         </Button>
       </DialogTrigger>
       <DialogContent className="px-0">

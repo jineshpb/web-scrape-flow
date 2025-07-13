@@ -68,7 +68,7 @@ function WorkflowCard({ workflow }: { workflow: workflow }) {
             )}
           </div>
           <div>
-            <h3 className="text-base font-medium text-foreground flex flex-col items-start ml-2 ">
+            <h3 className="text-base font-medium text-muted-foreground flex flex-col items-start ml-2 ">
               <div className="flex items-center gap-1">
                 <TooltipWrapper content={workflow.description || ""}>
                   <Link
@@ -78,11 +78,10 @@ function WorkflowCard({ workflow }: { workflow: workflow }) {
                     {workflow.name}
                   </Link>
                 </TooltipWrapper>
-
                 <DuplicateWorkflowDialog workflowId={workflow.id} />
               </div>
               {isDraft && (
-                <span className=" px-2 py-0.5 text-xs font-medium bg-gray-200 text-gray-800 rounded-xl dark:bg-foreground/10 dark:text-foreground/50">
+                <span className=" px-2 py-0.5 text-xs font-medium bg-gray-200 text-muted-foreground rounded-xl dark:bg-foreground/10 dark:text-foreground/50">
                   Draft
                 </span>
               )}
@@ -195,7 +194,7 @@ function ScheduleSection({
 }) {
   if (isDraft) return null;
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
       <CornerDownRight className="h-4 w-4 text-muted-foreground" />
       <SchedulerDialog
         workflowId={workflowId}
