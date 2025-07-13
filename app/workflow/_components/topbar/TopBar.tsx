@@ -10,6 +10,7 @@ import ExecuteBtn from "./ExecuteBtn";
 import NavigationTabs from "./NavigationTabs";
 import PublishBtn from "./PublishBtn";
 import UnpublishBtn from "./UnpublishBtn";
+import { ModeToggle } from "@/components/ThemeModeToggle";
 
 interface Props {
   title: string;
@@ -52,6 +53,7 @@ function TopBar({
       </div>
       <NavigationTabs workflowId={workflowId} />
       <div className="flex gap-1 flex-1 justify-end">
+        <ModeToggle />
         {!hideButtons && (
           <>
             <ExecuteBtn workflowId={workflowId} />

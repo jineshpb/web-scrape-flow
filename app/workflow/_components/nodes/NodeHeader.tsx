@@ -177,10 +177,10 @@ function NodeHeader({
             <Badge
               className={`
                 gap-2 flex items-center text-xs
-                bg-${task.theme.color} 
-                text-${colorBase}-50
-                border-${task.theme.color}
-                hover:bg-${task.theme.color}/90
+                bg-${task.theme.color}/10
+                text-${colorBase}
+                border-${task.theme.color}/20
+                hover:bg-${task.theme.color}/20
                 transition-colors
               `}
             >
