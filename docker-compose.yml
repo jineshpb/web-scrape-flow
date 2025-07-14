@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    image: webscrape-saas
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      # Set your external PostgreSQL connection string here:
+      DATABASE_URL: postgres://postgres:oE6FamLD6gikAs6oEDytDo63sdmEBdKuvKRintT7fRhJj6n5rFDDihlX5ZkFZ5YF@i0wosgk8w48wcws08k4kwcw8:5432/postgres
+    ports:
+      - "3000:3000"
+    command: npm start
