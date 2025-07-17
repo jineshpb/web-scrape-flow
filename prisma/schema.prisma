@@ -21,10 +21,16 @@ generator client {
 //   url      = "file:../../dev.db"  // Points to prisma/dev.db
 // }
 
+// datasource db {
+//   provider = "postgresql"
+//   url      = "postgres://postgres:oE6FamLD6gikAs6oEDytDo63sdmEBdKuvKRintT7fRhJj6n5rFDDihlX5ZkFZ5YF@i0wosgk8w48wcws08k4kwcw8:5432/postgres"
+// }
 datasource db {
   provider = "postgresql"
-  url      = "postgres://postgres:oE6FamLD6gikAs6oEDytDo63sdmEBdKuvKRintT7fRhJj6n5rFDDihlX5ZkFZ5YF@i0wosgk8w48wcws08k4kwcw8:5432/postgres"
+  url      = "postgres://postgres:GNoh2qhtUxhxZq3nNKXkJJ11xWSa2wW8ssHHAzlCzspPeRrU6UTsbgw6qmSWwwnw@localhost:5433/postgres"
 }
+
+
 
 //TODO: change to sentence case
 

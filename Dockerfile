@@ -1,23 +1,29 @@
-FROM node:18-alpine AS builder
+# Use official Node.js image
+FROM node:18-slim AS builder
+
 WORKDIR /app
+
+# Install OpenSSL for Prisma
+RUN apt-get update -y && apt-get install -y openssl
+
+# Copy package files and prisma schema for dependency install and prisma generate
 COPY package*.json ./
+COPY prisma ./prisma
+
+# Set dummy DB URL for build
+ENV DATABASE_URL="postgresql://user:pass@localhost:5432/dummy"
+
+# Install dependencies (runs postinstall, including prisma generate)
 RUN npm ci
+
+# Copy the rest of the source code
 COPY . .
+
+# Build the app
 RUN npm run build
 
-FROM node:18-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV production
-
-# Copy necessary files from builder
-COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-
-# Server port
-EXPOSE 3000
-
-# Start the application
-CMD ["npm", "start"]
+# (Optional) Use a smaller image for production
+# FROM node:18-alpine AS production
+# WORKDIR /app
+# COPY --from=builder /app ./
+# CMD ["npm", "start"]
