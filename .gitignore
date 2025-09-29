@@ -51,3 +51,5 @@ prisma/*.db
 prisma/*.db-journal
 
 
+.cursor/mcp.json
+setup-mcp.ps1
