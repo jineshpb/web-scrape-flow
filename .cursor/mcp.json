@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "shadcn-ui": {
+      "command": "npx",
+      "args": ["-y", "shadcn-ui-mcp-server"],
+      "env": {}
+    },
+    "shadcn-ui-custom": {
+      "command": "npx",
+      "args": [
+        "@jpisnice/shadcn-ui-mcp-server",
+        "--github-api-key",
+        "env.GITHUB_API_KEY"
+      ],
+      "env": {}
+    }
+  }
+}
